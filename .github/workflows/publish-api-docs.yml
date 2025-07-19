@@ -7,18 +7,12 @@ on:
       - 'src/**'
       - 'build.gradle'
       - 'gradle/**'
-  pull_request:
-    branches: [main]
-    paths:
-      - 'src/**'
-      - 'build.gradle'
-      - 'gradle/**'
   workflow_dispatch:
 
 jobs:
-  build-and-publish:
+  publish-docs:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -38,14 +32,13 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build Application
+      - name: Build & Generate OpenAPI
         env:
           SPRING_PROFILES_ACTIVE: dev
-        run: ./gradlew clean build -x test
-
-      - name: Start Application and Generate OpenAPI
         run: |
-          # 애플리케이션을 백그라운드에서 시작
+          ./gradlew clean build -x test
+          
+          # 애플리케이션을 백그라운드에서 시작하여 OpenAPI JSON 생성
           nohup ./gradlew bootRun --args='--spring.profiles.active=dev' > app.log 2>&1 &
           APP_PID=$!
           
@@ -80,11 +73,10 @@ jobs:
             exit 1
           fi
 
-      - name: Install GitBook CLI with legacy peer deps
-        run: npm install -g @gitbook/cli@latest --legacy-peer-deps
+      - name: Install GitBook CLI
+        run: npm install -g @gitbook/cli
 
-      - name: Publish to GitBook (Main Branch Only)
-        if: github.ref == 'refs/heads/main'
+      - name: Publish OpenAPI Spec to GitBook
         env:
           GITBOOK_TOKEN: ${{ secrets.GITBOOK_TOKEN }}
         run: |
@@ -98,45 +90,4 @@ jobs:
         with:
           name: openapi-spec
           path: openapi.json
-          retention-days: 30
-
-      - name: Comment PR with API Changes (PR Only)
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            let openapiContent = '';
-            try {
-              openapiContent = fs.readFileSync('openapi.json', 'utf8');
-            } catch (error) {
-              console.log('OpenAPI JSON not found');
-            }
-            
-            const comment = `## API Documentation Generated ✅
-            
-            OpenAPI specification has been generated successfully.
-            
-            **Summary:**
-            - OpenAPI JSON: ${openapiContent ? '✅ Generated' : '❌ Failed'}
-            - File Size: ${openapiContent ? (openapiContent.length / 1024).toFixed(2) + ' KB' : 'N/A'}
-            
-            **Next Steps:**
-            - Merge this PR to automatically publish to GitBook
-            - API documentation will be available at your GitBook space
-            
-            <details>
-            <summary>OpenAPI Preview (First 1000 chars)</summary>
-            
-            \`\`\`json
-            ${openapiContent ? openapiContent.substring(0, 1000) + '...' : 'No content available'}
-            \`\`\`
-            
-            </details>`;
-            
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: comment
-            }); 
+          retention-days: 30 
