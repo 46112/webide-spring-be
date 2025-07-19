@@ -1,4 +1,4 @@
-name: Publish API Documentation to GitBook
+name: Publish API Documentation to GitBook (Direct API)
 
 on:
   push:
@@ -29,11 +29,6 @@ jobs:
           distribution: 'temurin'
           java-version: 17
           cache: 'gradle'
-
-      - name: Set up Node.js 18
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -80,18 +75,74 @@ jobs:
             exit 1
           fi
 
-      - name: Install GitBook CLI with legacy peer deps
-        run: npm install -g @gitbook/cli@latest --legacy-peer-deps
-
-      - name: Publish to GitBook (Main Branch Only)
+      - name: Publish to GitBook via Direct API (Main Branch Only)
         if: github.ref == 'refs/heads/main'
         env:
           GITBOOK_TOKEN: ${{ secrets.GITBOOK_TOKEN }}
         run: |
-          gitbook openapi publish \
-            --organization "${{ secrets.GITBOOK_ORG }}" \
-            --spec "${{ secrets.GITBOOK_SPEC }}" \
-            openapi.json
+          echo "Publishing OpenAPI spec to GitBook via direct API..."
+          
+          # GitBook API v1 엔드포인트 (OpenAPI 스펙 업로드)
+          # 참고: https://docs.gitbook.com/api-reference/content-api
+          
+          # 1. 먼저 스페이스 정보 확인
+          echo "Checking GitBook space information..."
+          SPACE_RESPONSE=$(curl -s -w "%{http_code}" \
+            -H "Authorization: Bearer $GITBOOK_TOKEN" \
+            "https://api.gitbook.com/v1/spaces/${{ secrets.GITBOOK_ORG }}")
+          
+          SPACE_HTTP_CODE="${SPACE_RESPONSE: -3}"
+          SPACE_BODY="${SPACE_RESPONSE%???}"
+          
+          if [ "$SPACE_HTTP_CODE" -ne 200 ]; then
+            echo "Failed to access GitBook space. HTTP Code: $SPACE_HTTP_CODE"
+            echo "Response: $SPACE_BODY"
+            exit 1
+          fi
+          
+          echo "GitBook space accessible successfully"
+          
+          # 2. OpenAPI 스펙 업로드
+          echo "Uploading OpenAPI specification..."
+          
+          # GitBook API를 통해 OpenAPI 스펙 업로드
+          # 방법 1: API 스펙 엔드포인트 사용
+          API_RESPONSE=$(curl -s -w "%{http_code}" -X POST \
+            -H "Authorization: Bearer $GITBOOK_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d @openapi.json \
+            "https://api.gitbook.com/v1/spaces/${{ secrets.GITBOOK_ORG }}/content/api/${{ secrets.GITBOOK_SPEC }}")
+          
+          API_HTTP_CODE="${API_RESPONSE: -3}"
+          API_BODY="${API_RESPONSE%???}"
+          
+          if [ "$API_HTTP_CODE" -eq 200 ] || [ "$API_HTTP_CODE" -eq 201 ]; then
+            echo "Successfully published to GitBook!"
+            echo "Response: $API_BODY"
+          else
+            echo "Failed to publish via API endpoint. HTTP Code: $API_HTTP_CODE"
+            echo "Response: $API_BODY"
+            
+            # 방법 2: 대안 - 파일 업로드 방식
+            echo "Trying alternative upload method..."
+            ALT_RESPONSE=$(curl -s -w "%{http_code}" -X PUT \
+              -H "Authorization: Bearer $GITBOOK_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d @openapi.json \
+              "https://api.gitbook.com/v1/spaces/${{ secrets.GITBOOK_ORG }}/content/api/${{ secrets.GITBOOK_SPEC }}")
+            
+            ALT_HTTP_CODE="${ALT_RESPONSE: -3}"
+            ALT_BODY="${ALT_RESPONSE%???}"
+            
+            if [ "$ALT_HTTP_CODE" -eq 200 ] || [ "$ALT_HTTP_CODE" -eq 201 ]; then
+              echo "Successfully published to GitBook via alternative method!"
+              echo "Response: $ALT_BODY"
+            else
+              echo "All upload methods failed. HTTP Code: $ALT_HTTP_CODE"
+              echo "Response: $ALT_BODY"
+              exit 1
+            fi
+          fi
 
       - name: Upload OpenAPI JSON as Artifact
         uses: actions/upload-artifact@v4
