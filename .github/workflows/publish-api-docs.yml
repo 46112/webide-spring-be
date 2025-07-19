@@ -1,0 +1,143 @@
+name: Publish API Documentation to GitBook
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'build.gradle'
+      - 'gradle/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'build.gradle'
+      - 'gradle/**'
+  workflow_dispatch:
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 17
+          cache: 'gradle'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build Application
+        env:
+          SPRING_PROFILES_ACTIVE: dev
+        run: ./gradlew clean build -x test
+
+      - name: Start Application and Generate OpenAPI
+        run: |
+          # 애플리케이션을 백그라운드에서 시작
+          nohup ./gradlew bootRun --args='--spring.profiles.active=dev' > app.log 2>&1 &
+          APP_PID=$!
+          
+          # 애플리케이션 시작 대기
+          echo "Waiting for application to start..."
+          for i in {1..30}; do
+            if curl -s http://localhost:8080/health > /dev/null 2>&1; then
+              echo "Application started successfully"
+              break
+            fi
+            if [ $i -eq 30 ]; then
+              echo "Application failed to start within 30 seconds"
+              cat app.log
+              exit 1
+            fi
+            sleep 1
+          done
+          
+          # OpenAPI JSON 다운로드
+          echo "Downloading OpenAPI JSON..."
+          curl -s http://localhost:8080/v3/api-docs > openapi.json
+          
+          # 애플리케이션 종료
+          kill $APP_PID
+          
+          # OpenAPI JSON 검증
+          if [ -s openapi.json ]; then
+            echo "OpenAPI JSON generated successfully"
+            echo "File size: $(wc -c < openapi.json) bytes"
+          else
+            echo "Failed to generate OpenAPI JSON"
+            exit 1
+          fi
+
+      - name: Install GitBook CLI
+        run: npm install -g @gitbook/cli
+
+      - name: Publish to GitBook (Main Branch Only)
+        if: github.ref == 'refs/heads/main'
+        env:
+          GITBOOK_TOKEN: ${{ secrets.GITBOOK_TOKEN }}
+        run: |
+          gitbook openapi publish \
+            --organization "${{ secrets.GITBOOK_ORG }}" \
+            --spec "${{ secrets.GITBOOK_SPEC }}" \
+            openapi.json
+
+      - name: Upload OpenAPI JSON as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: openapi-spec
+          path: openapi.json
+          retention-days: 30
+
+      - name: Comment PR with API Changes (PR Only)
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let openapiContent = '';
+            try {
+              openapiContent = fs.readFileSync('openapi.json', 'utf8');
+            } catch (error) {
+              console.log('OpenAPI JSON not found');
+            }
+            
+            const comment = `## API Documentation Generated ✅
+            
+            OpenAPI specification has been generated successfully.
+            
+            **Summary:**
+            - OpenAPI JSON: ${openapiContent ? '✅ Generated' : '❌ Failed'}
+            - File Size: ${openapiContent ? (openapiContent.length / 1024).toFixed(2) + ' KB' : 'N/A'}
+            
+            **Next Steps:**
+            - Merge this PR to automatically publish to GitBook
+            - API documentation will be available at your GitBook space
+            
+            <details>
+            <summary>OpenAPI Preview (First 1000 chars)</summary>
+            
+            \`\`\`json
+            ${openapiContent ? openapiContent.substring(0, 1000) + '...' : 'No content available'}
+            \`\`\`
+            
+            </details>`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            }); 
