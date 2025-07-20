@@ -21,16 +21,16 @@ public class OpenApiConfig {
                         .description("SQL 쿼리 시각화 IDE를 위한 Spring Boot 백엔드 API")
                         .version("1.0.0")
                         .contact(new Contact()
-                                .name("WebIDE Team")
+                                .name("WithQuery Team")
                                 .email("contact@webide.com")
-                                .url("https://github.com/webide-project"))
+                                .url("https://github.com/with-query/webide-spring-be"))
                         .license(new License()
                                 .name("MIT License")
                                 .url("https://opensource.org/licenses/MIT")))
                 .servers(List.of(
                         new Server()
                                 .url("http://localhost:8081")
-                                .description("개발 서버"),
+                                .description("배포 서버"),
                         new Server()
                                 .url("http://localhost:8080")
                                 .description("로컬 서버")
