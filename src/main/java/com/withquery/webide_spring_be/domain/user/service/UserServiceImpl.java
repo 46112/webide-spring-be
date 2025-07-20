@@ -17,21 +17,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserRegistrationResponse registerUser(UserRegistrationRequest request) {
-        // 이메일 중복 검사
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("이미 존재하는 이메일입니다.");
         }
         
-        // 닉네임 중복 검사
         if (userRepository.existsByNickname(request.getNickname())) {
             throw new RuntimeException("이미 존재하는 닉네임입니다.");
         }
         
-        // 사용자 생성
         User user = new User();
         user.setEmail(request.getEmail());
         user.setNickname(request.getNickname());
-        user.setPassword(request.getPassword()); // 실제로는 암호화해야 함
+        user.setPassword(request.getPassword()); // TODO: 실제로는 암호화해야 함
         
         User savedUser = userRepository.save(user);
         return new UserRegistrationResponse("회원가입이 완료되었습니다.", savedUser.getId());
