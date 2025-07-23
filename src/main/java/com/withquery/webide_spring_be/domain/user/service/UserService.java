@@ -5,5 +5,5 @@ import com.withquery.webide_spring_be.domain.user.dto.UserRegistrationResponse;
 
 public interface UserService {
 
-    UserRegistrationResponse registerUser(UserRegistrationRequest request);
+	UserRegistrationResponse registerUser(UserRegistrationRequest request);
 } 
