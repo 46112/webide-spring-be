@@ -48,8 +48,8 @@ public class ProjectMember {
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	@Schema(description = "멤버 역할", example = "MEMBER", implementation = MemberRole.class)
-	private MemberRole role;
+	@Schema(description = "멤버 역할", example = "MEMBER", implementation = ProjectMemberRole.class)
+	private ProjectMemberRole role;
 
 	@CreationTimestamp
 	@Column(name = "joined_at", nullable = false, updatable = false)
@@ -58,11 +58,11 @@ public class ProjectMember {
 
 	@Schema(hidden = true)
 	public boolean isOwner() {
-		return this.role == MemberRole.OWNER;
+		return this.role == ProjectMemberRole.OWNER;
 	}
 
 	@Schema(hidden = true)
 	public boolean isMember() {
-		return this.role == MemberRole.MEMBER;
+		return this.role == ProjectMemberRole.MEMBER;
 	}
 }
