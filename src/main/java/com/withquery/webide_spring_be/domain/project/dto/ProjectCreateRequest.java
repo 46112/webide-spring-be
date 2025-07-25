@@ -15,7 +15,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ProjectCreateRequest {
 	@Schema(description = "프로젝트 이름", example = "My Project")
-	@NotBlank(message = "프로젝트 이름을 입력하세요.")
+	@NotBlank(message = "프로젝트 이름은 필수값입니다.")
 	@Size(max = 100, message = "프로젝트 이름은 100자를 초과할 수 없습니다.")
 	private String name;
 

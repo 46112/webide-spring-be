@@ -16,7 +16,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class FileCreateRequest {
 	@Schema(description = "파일/디렉토리 이름", example = "main.java")
-	@NotBlank(message = "파일/디렉토리 이름은을 입력하세요")
+	@NotBlank(message = "파일/디렉토리 이름은 필수입니다.")
 	@Size(max = 255, message = "파일/디렉토리 이름은 255자를 초과할 수 없습니다.")
 	private String name;
 
