@@ -27,4 +27,7 @@ public class FileCreateRequest {
 
 	@Schema(description = "상위 디렉토리 ID")
 	private Long parentId;
+
+	@Schema(description = "파일 내용 (type이 FILE일 때만)")
+	private String content;
 }

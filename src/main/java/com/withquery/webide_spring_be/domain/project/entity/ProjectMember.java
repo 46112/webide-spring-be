@@ -53,7 +53,7 @@ public class ProjectMember {
 
 	@CreationTimestamp
 	@Column(name = "joined_at", nullable = false, updatable = false)
-	@Schema(description = "프로젝트 참여 일시", example = "2024-01-15T10:30:00")
+	@Schema(description = "프로젝트 참여 일시", example = "2025-07-25T10:30:00")
 	private LocalDateTime joinedAt;
 
 	@Schema(hidden = true)
