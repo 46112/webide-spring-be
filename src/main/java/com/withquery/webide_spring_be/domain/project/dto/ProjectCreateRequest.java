@@ -19,7 +19,7 @@ public class ProjectCreateRequest {
 	@Size(max = 100, message = "프로젝트 이름은 100자를 초과할 수 없습니다.")
 	private String name;
 
-	@Schema(description = "프로젝트 설명", example = "프로젝트 상세 설명")
+	@Schema(description = "프로젝트 설명", example = "데이터 분석을 위한 SQL 프로젝트입니다.")
 	@Size(max = 500, message = "프로젝트 설명은 500자를 초과할 수 없습니다.")
 	private String description;
 }

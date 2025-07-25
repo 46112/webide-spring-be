@@ -15,15 +15,15 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FileUpdateRequest {
-	@Schema(description = "파일 고유 ID")
+	@Schema(description = "파일 고유 ID", example = "123")
 	@NotNull(message = "파일 ID는 필수입니다.")
 	private Long id;
 
-	@Schema(description = "새 이름")
+	@Schema(description = "새 이름", example = "new main.java")
 	@NotBlank(message = "새 이름은 필수입니다.")
 	@Size(max = 255, message = "파일/디렉토리 이름은 255자를 초과할 수 없습니다.")
 	private String newName;
 
-	@Schema(description = "새 상위 디렉토리 ID")
+	@Schema(description = "새 상위 디렉토리 ID", example = "2")
 	private Long newParentId;
 }

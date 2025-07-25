@@ -17,7 +17,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FileTreeNode {
-	@Schema(description = "파일/디렉토리 ID")
+	@Schema(description = "파일 고유 ID", example = "123")
 	private Long id;
 
 	@Schema(description = "파일/디렉토리 이름")

@@ -18,20 +18,20 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class ProjectResponse {
-	@Schema(description = "프로젝트 고유 ID")
+	@Schema(description = "프로젝트 고유 ID", example = "001")
 	private Long id;
 
-	@Schema(description = "프로젝트 이름")
+	@Schema(description = "프로젝트 이름", example = "My Project")
 	private String name;
 
-	@Schema(description = "프로젝트 설명")
+	@Schema(description = "프로젝트 설명", example = "데이터 분석을 위한 SQL 프로젝트입니다.")
 	private String description;
 
-	@Schema(description = "프로젝트 생성 일시")
+	@Schema(description = "프로젝트 생성 일시", example = "2025-07-22 10:30:00")
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime createdAt;
 
-	@Schema(description = "프로젝트 수정 일시")
+	@Schema(description = "프로젝트 수정 일시", example = "2025-07-23 12:30:30")
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime updatedAt;
 }

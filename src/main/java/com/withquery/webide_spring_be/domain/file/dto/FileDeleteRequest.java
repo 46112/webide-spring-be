@@ -13,7 +13,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FileDeleteRequest {
-	@Schema(description = "파일 고유 ID")
+	@Schema(description = "파일 고유 ID", example = "123")
 	@NotNull(message = "파일 ID는 필수입니다.")
 	private Long id;
 }

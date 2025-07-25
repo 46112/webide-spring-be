@@ -48,12 +48,12 @@ public class Project {
 
 	@CreationTimestamp
 	@Column(name = "created_at", nullable = false, updatable = false)
-	@Schema(description = "프로젝트 생성 일시", example = "2025-07-22T10:30:00")
+	@Schema(description = "프로젝트 생성 일시", example = "2025-07-22 10:30:00")
 	private LocalDateTime createdAt;
 
 	@UpdateTimestamp
 	@Column(name = "updated_at", nullable = false)
-	@Schema(description = "프로젝트 수정 일시", example = "2025-07-23T12:30:30")
+	@Schema(description = "프로젝트 수정 일시", example = "2025-07-23 12:30:30")
 	private LocalDateTime updatedAt;
 
 	@OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)

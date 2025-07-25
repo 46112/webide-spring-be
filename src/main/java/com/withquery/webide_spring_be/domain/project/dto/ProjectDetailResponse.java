@@ -10,7 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Schema(description = "프로젝트 상세 정보")
+@Schema(description = "프로젝트 상세 정보 응답")
 @Getter
 @Setter
 @NoArgsConstructor
