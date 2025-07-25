@@ -2,6 +2,8 @@ package com.withquery.webide_spring_be.domain.project.dto;
 
 import java.util.List;
 
+import com.withquery.webide_spring_be.domain.file.dto.FileTreeNode;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,5 +20,5 @@ public class ProjectDetailResponse {
 	private ProjectResponse project;
 
 	@Schema(description = "파일 트리")
-	private List<ProjectFileTreeNode> fileTree;
+	private List<FileTreeNode> fileTree;
 }

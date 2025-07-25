@@ -1,7 +1,6 @@
-package com.withquery.webide_spring_be.domain.project.dto;
+package com.withquery.webide_spring_be.domain.file.dto;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -11,13 +10,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Schema(description = "파일 트리 노드")
+@Schema(description = "파일/디렉토리 응답")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProjectFileTreeNode {
-	@Schema(description = "파일/디렉토리 ID")
+public class FileResponse {
+	@Schema(description = "파일 고유 ID")
 	private Long id;
 
 	@Schema(description = "파일/디렉토리 이름")
@@ -26,17 +25,20 @@ public class ProjectFileTreeNode {
 	@Schema(description = "타입")
 	private String type;
 
-	@Schema(description = "파일 경로")
+	@Schema(description = "상위 디렉토리 ID")
+	private Long parentId;
+
+	@Schema(description = "소속 프로젝트 ID")
+	private Long projectId;
+
+	@Schema(description = "파일/디렉토리 전체 경로")
 	private String path;
 
-	@Schema(description = "하위 항목들")
-	private List<ProjectFileTreeNode> children;
-
-	@Schema(description = "생성일시")
+	@Schema(description = "파일 생성 일시")
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime createdAt;
 
-	@Schema(description = "수정일시")
+	@Schema(description = "파일 수정 일시")
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime updatedAt;
 }

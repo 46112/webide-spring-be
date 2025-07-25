@@ -48,7 +48,7 @@ public class File {
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	@Schema(description = "파일 타입", example = "FILE", implementation = FileType.class)
+	@Schema(description = "타입", example = "FILE", implementation = FileType.class)
 	private FileType type;
 
 	@Column(columnDefinition = "LONGTEXT")
