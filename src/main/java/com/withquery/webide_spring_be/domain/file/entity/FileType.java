@@ -1,4 +1,4 @@
-package com.withquery.webide_spring_be.domain.project.entity;
+package com.withquery.webide_spring_be.domain.file.entity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

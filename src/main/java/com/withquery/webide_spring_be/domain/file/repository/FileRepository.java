@@ -1,18 +1,18 @@
-package com.withquery.webide_spring_be.domain.project.repository;
+package com.withquery.webide_spring_be.domain.file.repository;
 
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.withquery.webide_spring_be.domain.project.entity.File;
+import com.withquery.webide_spring_be.domain.file.entity.File;
 
 public interface FileRepository extends JpaRepository<File, Long> {
 
 	List<File> findByProjectIdAndParentFileIsNullOrderByTypeAscNameAsc(Long projectId);
 
 	List<File> findByParentFileIdOrderByTypeAscNameAsc(Long parentId);
-	
+
 	Optional<File> findByProjectIdAndPath(Long projectId, String path);
 
 	List<File> findByProjectIdAndType(Long projectId, String type);
