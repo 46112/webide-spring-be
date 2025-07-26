@@ -19,18 +19,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserRegistrationResponse registerUser(UserRegistrationRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmail(request.email())) {
             throw new RuntimeException("이미 존재하는 이메일입니다.");
         }
         
-        if (userRepository.existsByNickname(request.getNickname())) {
+        if (userRepository.existsByNickname(request.nickname())) {
             throw new RuntimeException("이미 존재하는 닉네임입니다.");
         }
         
         User user = new User();
-        user.setEmail(request.getEmail());
-        user.setNickname(request.getNickname());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setEmail(request.email());
+        user.setNickname(request.nickname());
+        user.setPassword(passwordEncoder.encode(request.password()));
         
         User savedUser = userRepository.save(user);
         return new UserRegistrationResponse("회원가입이 완료되었습니다.", savedUser.getId());
