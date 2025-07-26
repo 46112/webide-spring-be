@@ -47,7 +47,7 @@ public class UserController {
         ),
         @ApiResponse(
             responseCode = "400",
-            description = "잘못된 요청 (중복된 이메일 또는 닉네임)",
+            description = "잘못된 요청 (중복된 이메일 또는 닉네임, 비밀번호 정책 위배)",
             content = @Content(
                 schema = @Schema(implementation = ErrorResponse.class)
             )
