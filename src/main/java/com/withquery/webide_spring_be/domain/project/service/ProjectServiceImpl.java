@@ -25,10 +25,21 @@ public class ProjectServiceImpl implements ProjectService{
 
 	private final ProjectRepository projectRepository;
 	private final ProjectMemberRepository projectMemberRepository;
+	private final ProjectMemberService projectMemberService;
 
 	@Override
 	public ProjectResponse createProject(ProjectCreateRequest request, Long userId) {
-		return null;
+		Project project = Project.builder()
+			.name(request.getName())
+			.description(request.getDescription())
+			.ownerId(userId)
+			.build();
+
+		Project savedProject = projectRepository.save(project);
+
+		projectMemberService.addOwnerMember(savedProject.getId(), userId);
+
+		return ProjectResponse.from(savedProject);
 	}
 
 	@Override
