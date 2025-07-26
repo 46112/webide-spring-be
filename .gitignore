@@ -165,3 +165,10 @@ $RECYCLE.BIN/
 .editorconfig
 
 # End of https://www.toptal.com/developers/gitignore/api/java,windows,macos
+
+# Docker-Dev-Env
+docker-compose.dev.yml
+.dockerignore
+
+# Scripts
+scripts/
