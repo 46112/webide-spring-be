@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.withquery.webide_spring_be.domain.file.dto.FileTreeNode;
 import com.withquery.webide_spring_be.domain.project.dto.ProjectCreateRequest;
 import com.withquery.webide_spring_be.domain.project.dto.ProjectDetailResponse;
 import com.withquery.webide_spring_be.domain.project.dto.ProjectResponse;
@@ -55,7 +56,12 @@ public class ProjectServiceImpl implements ProjectService{
 
 	@Override
 	public ProjectDetailResponse getProjectDetail(Long projectId, Long userId) {
-		return null;
+		Project project = getProject(projectId);
+
+		FileTreeNode fileTree;
+
+		return ProjectDetailResponse.from(project, fileTree);
+
 	}
 
 	@Override

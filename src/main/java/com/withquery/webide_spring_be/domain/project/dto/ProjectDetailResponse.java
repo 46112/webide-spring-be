@@ -6,6 +6,7 @@ import com.withquery.webide_spring_be.domain.file.dto.FileTreeNode;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,10 +16,18 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ProjectDetailResponse {
 	@Schema(description = "프로젝트 정보")
 	private ProjectResponse project;
 
 	@Schema(description = "파일 트리")
 	private List<FileTreeNode> fileTree;
+
+	public static ProjectDetailResponse from(ProjectResponse project, List<FileTreeNode> fileTree) {
+		return ProjectDetailResponse.builder()
+			.project(project)
+			.fileTree(fileTree)
+			.build();
+	}
 }
