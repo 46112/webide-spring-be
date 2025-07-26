@@ -60,6 +60,11 @@ public class File {
 	private Long parentId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "parent_id", insertable = false, updatable = false) // parentId 컬럼과 연결하고, JPA가 직접 이 관계를 통해 parent_id를 수정하지 않도록 설정
+	@Schema(description = "상위 디렉토리 엔티티 (루트인 경우 null)")
+	private File parentFile;
+
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "project_id", nullable = false)
 	@Schema(description = "소속 프로젝트")
 	private Project project;

@@ -46,6 +46,10 @@ public class Project {
 	@Schema(description = "프로젝트 소유자 ID", example = "123")
 	private Long ownerId;
 
+	@Column(name = "is_public", nullable = false)
+	@Schema(description = "프로젝트 공개 여부", example = "true")
+	private Boolean isPublic;
+
 	@CreationTimestamp
 	@Column(name = "created_at", nullable = false, updatable = false)
 	@Schema(description = "프로젝트 생성 일시", example = "2025-07-22 10:30:00")
@@ -83,7 +87,7 @@ public class Project {
 
 	@Schema(hidden = true)
 	public boolean hasMember(Long userId) {
-		return this.ownerId.equals(userId) ||
+		return this.isPublic || this.ownerId.equals(userId) ||
 			this.members.stream().anyMatch(member -> member.getUserId().equals(userId));
 	}
 
