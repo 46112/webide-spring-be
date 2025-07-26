@@ -6,6 +6,7 @@ import com.withquery.webide_spring_be.domain.user.dto.UserRegistrationResponse;
 import com.withquery.webide_spring_be.domain.user.dto.UserInfoResponse;
 import com.withquery.webide_spring_be.domain.user.dto.UserUpdateRequest;
 import com.withquery.webide_spring_be.domain.user.dto.UserUpdateResponse;
+import com.withquery.webide_spring_be.domain.user.dto.UserDeleteResponse;
 import com.withquery.webide_spring_be.domain.user.service.UserService;
 import com.withquery.webide_spring_be.util.jwt.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -114,6 +115,33 @@ public class UserController {
             @RequestBody UserUpdateRequest request) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         UserUpdateResponse response = userService.updateUser(userDetails.getEmail(), request);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/me")
+    @Operation(
+        summary = "회원 탈퇴",
+        description = "현재 로그인한 사용자의 계정을 삭제합니다."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "회원 탈퇴 성공",
+            content = @Content(
+                schema = @Schema(implementation = UserDeleteResponse.class)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "인증되지 않은 요청",
+            content = @Content(
+                schema = @Schema(implementation = ErrorResponse.class)
+            )
+        )
+    })
+    public ResponseEntity<UserDeleteResponse> deleteMyAccount(Authentication authentication) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        UserDeleteResponse response = userService.deleteUser(userDetails.getEmail());
         return ResponseEntity.ok(response);
     }
 } 
