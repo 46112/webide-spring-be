@@ -61,7 +61,7 @@ public class UserController {
     @GetMapping("/me")
     @Operation(
         summary = "내 정보 조회",
-        description = "현재 로그인한 사용자의 정보를 조회합니다."
+        description = "현재 로그인한 사용자의 정보를 조회합니다. 로그인 상태 체크를 겸합니다."
     )
     @ApiResponses(value = {
         @ApiResponse(
