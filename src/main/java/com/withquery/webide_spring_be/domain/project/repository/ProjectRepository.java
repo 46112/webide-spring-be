@@ -2,6 +2,8 @@ package com.withquery.webide_spring_be.domain.project.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,10 +15,11 @@ import com.withquery.webide_spring_be.domain.project.entity.Project;
 public interface ProjectRepository extends JpaRepository<Project, Long> {
 
 	@Query("""
-		SELECT p FROM Project p
-		JOIN ProjectMember pm ON p.id = pm.project.id
-		WHERE pm.user.id = :userId AND pm.isActive = true""")
-	List<Project> findProjectByUserId(@Param("userId") Long userId);
+    SELECT DISTINCT p
+    FROM Project p
+    LEFT JOIN p.members m
+    WHERE p.ownerId = :userId OR m.userId = :userId""")
+	Page<Project> findProjectsByUserId(@Param("userId") Long userId, Pageable pageable);
 
 	List<Project> findByOwnerId(Long ownerId);
 
