@@ -4,6 +4,8 @@ import com.withquery.webide_spring_be.common.dto.ErrorResponse;
 import com.withquery.webide_spring_be.domain.user.dto.UserRegistrationRequest;
 import com.withquery.webide_spring_be.domain.user.dto.UserRegistrationResponse;
 import com.withquery.webide_spring_be.domain.user.dto.UserInfoResponse;
+import com.withquery.webide_spring_be.domain.user.dto.UserUpdateRequest;
+import com.withquery.webide_spring_be.domain.user.dto.UserUpdateResponse;
 import com.withquery.webide_spring_be.domain.user.service.UserService;
 import com.withquery.webide_spring_be.util.jwt.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -77,5 +79,41 @@ public class UserController {
     public ResponseEntity<UserInfoResponse> getMyInfo(Authentication authentication) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         return ResponseEntity.ok(new UserInfoResponse(userDetails.getEmail(), userDetails.getNickname()));
+    }
+
+    @PutMapping("/me")
+    @Operation(
+        summary = "내 정보 수정",
+        description = "현재 로그인한 사용자의 닉네임을 수정합니다. 닉네임은 중복될 수 없습니다."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "사용자 정보 수정 성공",
+            content = @Content(
+                schema = @Schema(implementation = UserUpdateResponse.class)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "잘못된 요청 (중복된 닉네임)",
+            content = @Content(
+                schema = @Schema(implementation = ErrorResponse.class)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "인증되지 않은 요청",
+            content = @Content(
+                schema = @Schema(implementation = ErrorResponse.class)
+            )
+        )
+    })
+    public ResponseEntity<UserUpdateResponse> updateMyInfo(
+            Authentication authentication,
+            @RequestBody UserUpdateRequest request) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        UserUpdateResponse response = userService.updateUser(userDetails.getEmail(), request);
+        return ResponseEntity.ok(response);
     }
 } 
