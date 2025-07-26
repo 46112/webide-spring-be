@@ -7,6 +7,7 @@ import com.withquery.webide_spring_be.domain.project.dto.ProjectDetailResponse;
 import com.withquery.webide_spring_be.domain.project.dto.ProjectListResponse;
 import com.withquery.webide_spring_be.domain.project.dto.ProjectResponse;
 import com.withquery.webide_spring_be.domain.project.dto.ProjectUpdateRequest;
+import com.withquery.webide_spring_be.domain.project.entity.Project;
 
 public interface ProjectService {
 
@@ -19,5 +20,9 @@ public interface ProjectService {
 	ProjectResponse updateProject(Long projectId, ProjectUpdateRequest request, Long userId);
 
 	void deleteProject(Long projectId, Long userId);
+
+	boolean existsProject(Long projectId);
+
+	Project getProject(Long projectId);
 
 }
