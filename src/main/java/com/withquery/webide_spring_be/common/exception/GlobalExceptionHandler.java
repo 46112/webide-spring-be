@@ -4,6 +4,7 @@ import com.withquery.webide_spring_be.common.dto.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -12,14 +13,19 @@ import org.springframework.web.context.request.WebRequest;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorResponse> handleRuntimeException(
-            RuntimeException ex, WebRequest request) {
-        log.warn("Runtime exception: {}", ex.getMessage());
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidationException(
+            MethodArgumentNotValidException ex, WebRequest request) {
+        log.warn("Validation exception: {}", ex.getMessage());
+        
+        String errorMessage = ex.getBindingResult().getFieldErrors().stream()
+                .map(error -> error.getDefaultMessage())
+                .findFirst()
+                .orElse("유효하지 않은 요청입니다.");
         
         ErrorResponse errorResponse = new ErrorResponse(
             "BAD_REQUEST", 
-            ex.getMessage()
+            errorMessage
         );
         
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
@@ -32,6 +38,19 @@ public class GlobalExceptionHandler {
         
         ErrorResponse errorResponse = new ErrorResponse(
             "INVALID_ARGUMENT", 
+            ex.getMessage()
+        );
+        
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorResponse> handleRuntimeException(
+            RuntimeException ex, WebRequest request) {
+        log.warn("Runtime exception: {}", ex.getMessage());
+        
+        ErrorResponse errorResponse = new ErrorResponse(
+            "BAD_REQUEST", 
             ex.getMessage()
         );
         

@@ -22,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/users")
@@ -46,14 +47,14 @@ public class UserController {
         ),
         @ApiResponse(
             responseCode = "400",
-            description = "잘못된 요청 (중복된 이메일 또는 닉네임)",
+            description = "잘못된 요청 (중복된 이메일 또는 닉네임, 비밀번호 정책 위배)",
             content = @Content(
                 schema = @Schema(implementation = ErrorResponse.class)
             )
         )
     })
     public ResponseEntity<UserRegistrationResponse> registerUser(
-            @RequestBody UserRegistrationRequest request) {
+            @Valid @RequestBody UserRegistrationRequest request) {
         UserRegistrationResponse response = userService.registerUser(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

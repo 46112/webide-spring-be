@@ -25,16 +25,12 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public LoginResponse login(LoginRequest request) {
-        // 이메일로 사용자 찾기
-        User user = userRepository.findByEmail(request.email())
-                .orElseThrow(() -> new RuntimeException("이메일 또는 비밀번호가 잘못되었습니다."));
+        User user = userRepository.findByEmail(request.email()).orElse(null);
 
-        // 비밀번호 검증
-        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
+        String passwordHash = (user != null) ? user.getPassword() : "$2a$10$7EqJtq98hPqEX7fNZaFWoOeIx8eD1Zzt1aG6zV4bE4xF2z5i5f7eK"; // bcrypt hash of "dummy"
+        if (!passwordEncoder.matches(request.password(), passwordHash)) {
             throw new RuntimeException("이메일 또는 비밀번호가 잘못되었습니다.");
         }
-
-        // JWT 토큰 생성
         String token = jwtTokenProvider.generateToken(user.getEmail(), user.getNickname());
 
         return new LoginResponse("로그인이 성공했습니다.", token, user.getNickname());
