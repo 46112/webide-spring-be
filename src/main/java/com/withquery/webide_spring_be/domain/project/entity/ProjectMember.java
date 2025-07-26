@@ -65,4 +65,9 @@ public class ProjectMember {
 	public boolean isMember() {
 		return this.role == ProjectMemberRole.MEMBER;
 	}
+
+	@Schema(hidden = true)
+	@Column(name = "is_active", nullable = false)
+	private Boolean isActive = true;
+
 }

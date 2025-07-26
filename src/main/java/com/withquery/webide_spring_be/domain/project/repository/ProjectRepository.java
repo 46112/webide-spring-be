@@ -26,11 +26,17 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 	List<Project> findByNameContainingAndIsPublicTrue(String keyword);
 
 	@Query("""
-		SELECT p FROM Project p 
-		JOIN ProjectMember pm ON p.id = pm.project.id
-		WHERE pm.user.id = :userId AND p.name LIKE %:keyword%
-		""")
-	List<Project> searchUserProjectsByName(@Param("userId") Long userId, @Param("keyword") String keyword);
+    SELECT DISTINCT p
+    FROM Project p
+    LEFT JOIN p.members m
+    WHERE (p.ownerId = :userId OR m.userId = :userId)
+    AND p.name LIKE %:keyword%""")
+	Page<Project> searchUserProjectsByName(@Param("userId") Long userId, @Param("keyword") String keyword, Pageable pageable);
 
-	Long countByIdAndProjectMembersIsActiveTrue(Long projectId);
+	@Query("""
+	SELECT COUNT(pm)
+	FROM ProjectMember pm
+	WHERE pm.project.id = :projectId AND pm.isActive = true""")
+	Long countActiveMembers(@Param("projectId") Long projectId);
+
 }
