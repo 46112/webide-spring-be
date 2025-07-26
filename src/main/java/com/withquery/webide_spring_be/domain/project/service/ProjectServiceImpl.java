@@ -1,16 +1,17 @@
 package com.withquery.webide_spring_be.domain.project.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.withquery.webide_spring_be.domain.project.dto.ProjectCreateRequest;
 import com.withquery.webide_spring_be.domain.project.dto.ProjectDetailResponse;
-import com.withquery.webide_spring_be.domain.project.dto.ProjectListResponse;
 import com.withquery.webide_spring_be.domain.project.dto.ProjectResponse;
 import com.withquery.webide_spring_be.domain.project.dto.ProjectUpdateRequest;
 import com.withquery.webide_spring_be.domain.project.entity.Project;
+import com.withquery.webide_spring_be.domain.project.entity.ProjectMember;
 import com.withquery.webide_spring_be.domain.project.repository.ProjectMemberRepository;
 import com.withquery.webide_spring_be.domain.project.repository.ProjectRepository;
 
@@ -43,8 +44,13 @@ public class ProjectServiceImpl implements ProjectService{
 	}
 
 	@Override
-	public List<ProjectListResponse> getMyProjects(Long userId) {
-		return List.of();
+	public List<ProjectResponse> getMyProjects(Long userId) {
+
+		List<ProjectMember> members = projectMemberRepository.findByUserIdAndIsActiveTrue(userId);
+
+		return members.stream()
+			.map(member -> ProjectResponse.from(member.getProject(), member.getRole()))
+			.collect(Collectors.toList());
 	}
 
 	@Override

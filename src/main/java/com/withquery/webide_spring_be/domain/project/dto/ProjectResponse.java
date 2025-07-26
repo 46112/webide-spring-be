@@ -4,8 +4,12 @@ import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.withquery.webide_spring_be.domain.project.entity.Project;
+import com.withquery.webide_spring_be.domain.project.entity.ProjectMemberRole;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,6 +25,9 @@ import lombok.Setter;
 public class ProjectResponse {
 	@Schema(description = "프로젝트 고유 ID", example = "001")
 	private Long id;
+
+	@Schema(description = "멤버 역할", example = "MEMBER")
+	private ProjectMemberRole role;
 
 	@Schema(description = "프로젝트 이름", example = "My Project")
 	private String name;
@@ -43,6 +50,17 @@ public class ProjectResponse {
 			.description(project.getDescription())
 			.createdAt(project.getCreatedAt())
 			.updatedAt(project.getUpdatedAt())
+			.build();
+	}
+
+	public static ProjectResponse from(Project project, ProjectMemberRole userRole) {
+		return ProjectResponse.builder()
+			.id(project.getId())
+			.name(project.getName())
+			.description(project.getDescription())
+			.createdAt(project.getCreatedAt())
+			.updatedAt(project.getUpdatedAt())
+			.role(userRole)
 			.build();
 	}
 }
