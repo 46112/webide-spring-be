@@ -5,6 +5,8 @@ import com.withquery.webide_spring_be.domain.user.dto.UserRegistrationResponse;
 import com.withquery.webide_spring_be.domain.user.dto.UserUpdateRequest;
 import com.withquery.webide_spring_be.domain.user.dto.UserUpdateResponse;
 import com.withquery.webide_spring_be.domain.user.dto.UserDeleteResponse;
+import com.withquery.webide_spring_be.domain.user.dto.PasswordChangeRequest;
+import com.withquery.webide_spring_be.domain.user.dto.PasswordChangeResponse;
 import com.withquery.webide_spring_be.domain.user.entity.User;
 import com.withquery.webide_spring_be.domain.user.repository.UserRepository;
 import com.withquery.webide_spring_be.util.jwt.JwtTokenProvider;
@@ -71,5 +73,20 @@ public class UserServiceImpl implements UserService {
         userRepository.delete(user);
         
         return new UserDeleteResponse("회원 탈퇴가 완료되었습니다.");
+    }
+    
+    @Override
+    public PasswordChangeResponse changePassword(String email, PasswordChangeRequest request) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        
+        if (!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
+            throw new RuntimeException("현재 비밀번호가 일치하지 않습니다.");
+        }
+        
+        user.setPassword(passwordEncoder.encode(request.newPassword()));
+        userRepository.save(user);
+        
+        return new PasswordChangeResponse("비밀번호가 성공적으로 변경되었습니다.");
     }
 } 
