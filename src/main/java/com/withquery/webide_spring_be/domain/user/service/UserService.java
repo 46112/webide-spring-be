@@ -5,6 +5,8 @@ import com.withquery.webide_spring_be.domain.user.dto.UserRegistrationResponse;
 import com.withquery.webide_spring_be.domain.user.dto.UserUpdateRequest;
 import com.withquery.webide_spring_be.domain.user.dto.UserUpdateResponse;
 import com.withquery.webide_spring_be.domain.user.dto.UserDeleteResponse;
+import com.withquery.webide_spring_be.domain.user.dto.PasswordChangeRequest;
+import com.withquery.webide_spring_be.domain.user.dto.PasswordChangeResponse;
 
 public interface UserService {
 
@@ -13,4 +15,6 @@ public interface UserService {
     UserUpdateResponse updateUser(String email, UserUpdateRequest request);
     
     UserDeleteResponse deleteUser(String email);
+    
+    PasswordChangeResponse changePassword(String email, PasswordChangeRequest request);
 } 

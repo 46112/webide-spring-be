@@ -7,6 +7,8 @@ import com.withquery.webide_spring_be.domain.user.dto.UserInfoResponse;
 import com.withquery.webide_spring_be.domain.user.dto.UserUpdateRequest;
 import com.withquery.webide_spring_be.domain.user.dto.UserUpdateResponse;
 import com.withquery.webide_spring_be.domain.user.dto.UserDeleteResponse;
+import com.withquery.webide_spring_be.domain.user.dto.PasswordChangeRequest;
+import com.withquery.webide_spring_be.domain.user.dto.PasswordChangeResponse;
 import com.withquery.webide_spring_be.domain.user.service.UserService;
 import com.withquery.webide_spring_be.util.jwt.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -115,6 +117,42 @@ public class UserController {
             @RequestBody UserUpdateRequest request) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         UserUpdateResponse response = userService.updateUser(userDetails.getEmail(), request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/password")
+    @Operation(
+        summary = "비밀번호 변경",
+        description = "현재 로그인한 사용자의 비밀번호를 변경합니다. 현재 비밀번호 확인이 필요합니다."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "비밀번호 변경 성공",
+            content = @Content(
+                schema = @Schema(implementation = PasswordChangeResponse.class)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "잘못된 요청 (현재 비밀번호 불일치)",
+            content = @Content(
+                schema = @Schema(implementation = ErrorResponse.class)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "인증되지 않은 요청",
+            content = @Content(
+                schema = @Schema(implementation = ErrorResponse.class)
+            )
+        )
+    })
+    public ResponseEntity<PasswordChangeResponse> changePassword(
+            Authentication authentication,
+            @RequestBody PasswordChangeRequest request) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        PasswordChangeResponse response = userService.changePassword(userDetails.getEmail(), request);
         return ResponseEntity.ok(response);
     }
 
