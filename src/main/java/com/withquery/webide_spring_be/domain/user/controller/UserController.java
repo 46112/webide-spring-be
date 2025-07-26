@@ -5,8 +5,7 @@ import com.withquery.webide_spring_be.domain.user.dto.UserRegistrationRequest;
 import com.withquery.webide_spring_be.domain.user.dto.UserRegistrationResponse;
 import com.withquery.webide_spring_be.domain.user.dto.UserInfoResponse;
 import com.withquery.webide_spring_be.domain.user.service.UserService;
-import com.withquery.webide_spring_be.util.jwt.JwtTokenProvider;
-import com.withquery.webide_spring_be.util.jwt.JwtTokenExtractor;
+import com.withquery.webide_spring_be.util.jwt.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -16,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,8 +25,6 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
-    private final JwtTokenProvider jwtTokenProvider;
-    private final JwtTokenExtractor jwtTokenExtractor;
 
     @PostMapping("/register")
     @Operation(
@@ -74,21 +72,10 @@ public class UserController {
             content = @Content(
                 schema = @Schema(implementation = ErrorResponse.class)
             )
-        ),
-        @ApiResponse(
-            responseCode = "404",
-            description = "사용자를 찾을 수 없음",
-            content = @Content(
-                schema = @Schema(implementation = ErrorResponse.class)
-            )
         )
     })
-    public ResponseEntity<UserInfoResponse> getMyInfo(@RequestHeader("Authorization") String authHeader) {
-        String token = JwtTokenExtractor.extractToken(authHeader);
-        
-        String email = jwtTokenProvider.getEmailFromToken(token);
-        String nickname = jwtTokenProvider.getNicknameFromToken(token);
-        
-        return ResponseEntity.ok(new UserInfoResponse(email, nickname));
+    public ResponseEntity<UserInfoResponse> getMyInfo(Authentication authentication) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        return ResponseEntity.ok(new UserInfoResponse(userDetails.getEmail(), userDetails.getNickname()));
     }
 } 
