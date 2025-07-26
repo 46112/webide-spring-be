@@ -50,6 +50,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
         
         if (Objects.equals(user.getNickname(), request.nickname())) {
+
             String token = jwtTokenProvider.generateToken(user.getEmail(), user.getNickname());
             return new UserUpdateResponse(user.getNickname(), token, "닉네임이 변경되지 않았습니다.");
         }
