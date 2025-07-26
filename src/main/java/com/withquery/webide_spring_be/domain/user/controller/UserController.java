@@ -22,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/users")
@@ -53,7 +54,7 @@ public class UserController {
         )
     })
     public ResponseEntity<UserRegistrationResponse> registerUser(
-            @RequestBody UserRegistrationRequest request) {
+            @Valid @RequestBody UserRegistrationRequest request) {
         UserRegistrationResponse response = userService.registerUser(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
