@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Schema(description = "파일 내용 응답")
+@Schema(description = "파일 내용 수정 요청")
 @Getter
 @Setter
 @NoArgsConstructor
