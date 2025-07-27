@@ -161,6 +161,8 @@ public class FileServiceImpl implements FileService {
 	@Override
 	public void deleteAllProjectFiles(Long projectId) {
 
+		fileRepository.deleteById(projectId);
+
 	}
 
 	private FileTreeNode buildFileTree(List<File> files) {
