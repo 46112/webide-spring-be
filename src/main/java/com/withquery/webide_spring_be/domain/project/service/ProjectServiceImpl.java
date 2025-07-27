@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class ProjectServiceImpl implements ProjectService{
+public class ProjectServiceImpl implements ProjectService {
 
 	private final ProjectRepository projectRepository;
 	private final ProjectMemberRepository projectMemberRepository;
@@ -34,6 +34,10 @@ public class ProjectServiceImpl implements ProjectService{
 
 	@Override
 	public ProjectResponse createProject(ProjectCreateRequest request, Long userId) {
+		if (request.getName() == null || request.getName().trim().isEmpty()) {
+			throw new IllegalArgumentException("프로젝트 이름은 필수입니다.");
+		}
+
 		Project project = Project.builder()
 			.name(request.getName())
 			.description(request.getDescription())
@@ -49,7 +53,6 @@ public class ProjectServiceImpl implements ProjectService{
 
 	@Override
 	public List<ProjectResponse> getMyProjects(Long userId) {
-
 		List<ProjectMember> members = projectMemberRepository.findByUserIdAndIsActiveTrue(userId);
 
 		return members.stream()
@@ -73,7 +76,12 @@ public class ProjectServiceImpl implements ProjectService{
 
 	@Override
 	public ProjectResponse updateProject(Long projectId, ProjectUpdateRequest request, Long userId) {
-		Project project = getProjectWithPermissionCheck(projectId, userId, ProjectMemberRole.OWNER, ProjectMemberRole.MEMBER);
+		if (request.getNewName() == null || request.getNewName().trim().isEmpty()) {
+			throw new IllegalArgumentException("프로젝트 이름은 공백일 수 없습니다.");
+		}
+
+		Project project = getProjectWithPermissionCheck(projectId, userId, ProjectMemberRole.OWNER,
+			ProjectMemberRole.MEMBER);
 
 		project.updateInfo(request.getNewName(), request.getNewDescription());
 
@@ -103,10 +111,10 @@ public class ProjectServiceImpl implements ProjectService{
 
 	private Project getProjectWithPermissionCheck(Long projectId, Long userId, ProjectMemberRole... requiredRoles) {
 		Project project = projectRepository.findById(projectId)
-			.orElseThrow();
+			.orElseThrow(() -> new RuntimeException("프로젝트를 찾을 수 없습니다."));
 
 		if (!projectMemberService.hasPermission(projectId, userId, requiredRoles)) {
-			throw new RuntimeException();
+			throw new RuntimeException("프로젝트를 찾을 수 없습니다.");
 		}
 
 		return project;
