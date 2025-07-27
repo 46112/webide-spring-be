@@ -148,6 +148,14 @@ public class FileServiceImpl implements FileService {
 	@Override
 	public void saveFileContent(Long projectId, FileContentSaveRequest request) {
 
+		File file = fileRepository.findByIdAndProjectId(request.getFileId(), projectId)
+			.orElseThrow();
+
+		if (file.getType() != FileType.FILE) {
+			throw new RuntimeException();
+		}
+
+		file.updateContent(request.getContent());
 	}
 
 	@Override
