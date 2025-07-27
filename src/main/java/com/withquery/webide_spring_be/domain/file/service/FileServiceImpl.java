@@ -29,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class FileServiceImpl implements FileService{
+public class FileServiceImpl implements FileService {
 
 	private final FileRepository fileRepository;
 	private final ProjectService projectService;
@@ -122,10 +122,19 @@ public class FileServiceImpl implements FileService{
 	@Override
 	public void deleteFile(Long projectId, Long fileId) {
 
+		File file = fileRepository.findByIdAndProjectId(fileId, projectId)
+			.orElseThrow();
+
+		if (file.getParentId() == null) {
+			throw new RuntimeException();
+		}
+
+		fileRepository.delete(file);
 	}
 
 	@Override
 	public FileContentResponse getFileContent(Long projectId, Long fileId) {
+
 		return null;
 	}
 
@@ -138,7 +147,6 @@ public class FileServiceImpl implements FileService{
 	public void deleteAllProjectFiles(Long projectId) {
 
 	}
-
 
 	private FileTreeNode buildFileTree(List<File> files) {
 		Map<Long, FileTreeNode> nodeMap = new HashMap<>();
