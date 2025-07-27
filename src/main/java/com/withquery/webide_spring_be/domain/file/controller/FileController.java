@@ -45,7 +45,7 @@ public class FileController {
 	private final FileService fileService;
 	private final ProjectMemberService projectMemberService;
 
-	@PostMapping
+	@PostMapping("/root-directory")
 	@Operation(
 		summary = "루트 디렉토리 생성",
 		description = "프로젝트 생성 시 해당 프로젝트의 루트 디렉토리를 생성합니다.."
@@ -132,7 +132,7 @@ public class FileController {
 		return ResponseEntity.ok(fileTree);
 	}
 
-	@PostMapping
+	@PostMapping("/files")
 	@Operation(
 		summary = "파일/디렉토리 생성",
 		description = "특정 프로젝트 내에 새로운 파일 또는 디렉토리를 생성합니다."
