@@ -135,7 +135,14 @@ public class FileServiceImpl implements FileService {
 	@Override
 	public FileContentResponse getFileContent(Long projectId, Long fileId) {
 
-		return null;
+		File file = fileRepository.findByIdAndProjectId(fileId, projectId)
+			.orElseThrow();
+
+		if (file.getType() != FileType.FILE) {
+			throw new RuntimeException();
+		}
+
+		return FileContentResponse.from(file);
 	}
 
 	@Override
