@@ -73,7 +73,14 @@ public class ProjectServiceImpl implements ProjectService{
 
 	@Override
 	public ProjectResponse updateProject(Long projectId, ProjectUpdateRequest request, Long userId) {
-		return null;
+		Project project = getProject(projectId);
+
+		ProjectMemberRole userRole = projectMemberService.getMemberRole(projectId, userId)
+			.orElseThrow(() -> new RuntimeException("프로젝트 접근 권한이 없습니다."));
+
+		project.updateInfo(request.getNewName(), request.getNewDescription());
+		return ProjectResponse.from(project);
+
 	}
 
 	@Override

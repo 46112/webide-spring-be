@@ -71,13 +71,13 @@ public class Project {
 	private List<ProjectMember> members = new ArrayList<>();
 
 	@Schema(hidden = true)
-	public void updateName(String newName) {
-		this.name = newName;
-	}
-
-	@Schema(hidden = true)
-	public void updateDescription(String newDescription) {
-		this.description = newDescription;
+	public void updateInfo(String newName, String newDescription) {
+		if (newName != null) {
+			this.name = newName;
+		}
+		if (newDescription != null) {
+			this.description = newDescription;
+		}
 	}
 
 	@Schema(hidden = true)
