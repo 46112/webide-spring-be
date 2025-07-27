@@ -7,12 +7,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.withquery.webide_spring_be.domain.file.dto.FileTreeNode;
+import com.withquery.webide_spring_be.domain.file.service.FileService;
 import com.withquery.webide_spring_be.domain.project.dto.ProjectCreateRequest;
 import com.withquery.webide_spring_be.domain.project.dto.ProjectDetailResponse;
 import com.withquery.webide_spring_be.domain.project.dto.ProjectResponse;
 import com.withquery.webide_spring_be.domain.project.dto.ProjectUpdateRequest;
 import com.withquery.webide_spring_be.domain.project.entity.Project;
 import com.withquery.webide_spring_be.domain.project.entity.ProjectMember;
+import com.withquery.webide_spring_be.domain.project.entity.ProjectMemberRole;
 import com.withquery.webide_spring_be.domain.project.repository.ProjectMemberRepository;
 import com.withquery.webide_spring_be.domain.project.repository.ProjectRepository;
 
@@ -28,6 +30,7 @@ public class ProjectServiceImpl implements ProjectService{
 	private final ProjectRepository projectRepository;
 	private final ProjectMemberRepository projectMemberRepository;
 	private final ProjectMemberService projectMemberService;
+	private final FileService fileService;
 
 	@Override
 	public ProjectResponse createProject(ProjectCreateRequest request, Long userId) {
@@ -58,9 +61,13 @@ public class ProjectServiceImpl implements ProjectService{
 	public ProjectDetailResponse getProjectDetail(Long projectId, Long userId) {
 		Project project = getProject(projectId);
 
-		FileTreeNode fileTree;
+		ProjectMemberRole userRole = projectMemberService.getMemberRole(projectId, userId)
+			.orElseThrow(() -> new RuntimeException("프로젝트 접근 권한이 없습니다."));
 
-		return ProjectDetailResponse.from(project, fileTree);
+		FileTreeNode fileTree = fileService.getFileTree(projectId);
+
+		return ProjectDetailResponse.from(
+			ProjectResponse.from(project, userRole), fileTree);
 
 	}
 

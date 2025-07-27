@@ -24,10 +24,10 @@ public class ProjectDetailResponse {
 	@Schema(description = "파일 트리")
 	private List<FileTreeNode> fileTree;
 
-	public static ProjectDetailResponse from(ProjectResponse project, List<FileTreeNode> fileTree) {
+	public static ProjectDetailResponse from(ProjectResponse project, FileTreeNode fileTree) {
 		return ProjectDetailResponse.builder()
 			.project(project)
-			.fileTree(fileTree)
+			.fileTree(List.of(fileTree))
 			.build();
 	}
 }
