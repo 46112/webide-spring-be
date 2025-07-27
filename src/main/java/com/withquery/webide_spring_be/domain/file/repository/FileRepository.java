@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.withquery.webide_spring_be.domain.file.entity.File;
+import com.withquery.webide_spring_be.domain.file.entity.FileType;
 
 public interface FileRepository extends JpaRepository<File, Long> {
 
@@ -15,7 +16,7 @@ public interface FileRepository extends JpaRepository<File, Long> {
 
 	Optional<File> findByProjectIdAndPath(Long projectId, String path);
 
-	List<File> findByProjectIdAndType(Long projectId, String type);
+	List<File> findByProjectIdAndType(Long projectId, FileType type);
 
 	List<File> findByProjectIdAndNameContaining(Long projectId, String keyword);
 
@@ -23,5 +24,7 @@ public interface FileRepository extends JpaRepository<File, Long> {
 
 	Long countByParentFileId(Long parentId);
 
-	List<File> findByProjectIdAndTypeOrderByNameAsc(Long projectId, String type);
+	List<File> findByProjectIdAndTypeOrderByNameAsc(Long projectId, FileType type);
+
+	List<File> findByProjectIdOrderByPathAsc(Long projectId);
 }

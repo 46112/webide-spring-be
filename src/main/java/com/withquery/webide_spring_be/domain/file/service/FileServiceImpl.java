@@ -1,5 +1,9 @@
 package com.withquery.webide_spring_be.domain.file.service;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,7 +50,11 @@ public class FileServiceImpl implements FileService{
 
 	@Override
 	public FileTreeNode getFileTree(Long projectId) {
-		return null;
+
+		List<File> files = fileRepository.findByProjectIdOrderByPathAsc(projectId);
+		FileTreeNode root = buildFileTree(files);
+
+		return root != null ? root : new FileTreeNode();
 	}
 
 	@Override
@@ -78,4 +86,34 @@ public class FileServiceImpl implements FileService{
 	public void deleteAllProjectFiles(Long projectId) {
 
 	}
+
+
+	private FileTreeNode buildFileTree(List<File> files) {
+		Map<Long, FileTreeNode> nodeMap = new HashMap<>();
+		FileTreeNode root = null;
+
+		for (File file : files) {
+			FileTreeNode node = FileTreeNode.from(file);
+			nodeMap.put(file.getId(), node);
+
+			if (file.getParentId() == null) {
+				root = node;
+			}
+		}
+
+		for (File file : files) {
+			if (file.getParentId() != null) {
+				FileTreeNode parent = nodeMap.get(file.getParentId());
+				FileTreeNode child = nodeMap.get(file.getId());
+
+				if (parent != null && child != null) {
+					parent.addChild(child);
+				}
+			}
+		}
+
+		return root;
+	}
+
+
 }
