@@ -58,7 +58,11 @@ public class ProjectServiceImpl implements ProjectService {
 	}
 
 	@Override
-	public List<ProjectResponse> getMyProjects(Long userId) {
+	public List<ProjectResponse> getMyProjects(String userEmail) {
+		User user = userRepository.findByEmail(userEmail)
+			.orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+		Long userId = user.getId();
+
 		List<ProjectMember> members = projectMemberRepository.findByUserIdAndIsActiveTrue(userId);
 
 		return members.stream()
@@ -67,7 +71,11 @@ public class ProjectServiceImpl implements ProjectService {
 	}
 
 	@Override
-	public ProjectDetailResponse getProjectDetail(Long projectId, Long userId) {
+	public ProjectDetailResponse getProjectDetail(Long projectId, String userEmail) {
+		User user = userRepository.findByEmail(userEmail)
+			.orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+		Long userId = user.getId();
+
 		Project project = getProject(projectId);
 
 		ProjectMemberRole userRole = projectMemberService.getMemberRole(projectId, userId)
@@ -81,10 +89,14 @@ public class ProjectServiceImpl implements ProjectService {
 	}
 
 	@Override
-	public ProjectResponse updateProject(Long projectId, ProjectUpdateRequest request, Long userId) {
+	public ProjectResponse updateProject(Long projectId, ProjectUpdateRequest request, String userEmail) {
 		if (request.getNewName() == null || request.getNewName().trim().isEmpty()) {
 			throw new IllegalArgumentException("프로젝트 이름은 공백일 수 없습니다.");
 		}
+
+		User user = userRepository.findByEmail(userEmail)
+			.orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+		Long userId = user.getId();
 
 		Project project = getProjectWithPermissionCheck(projectId, userId, ProjectMemberRole.OWNER,
 			ProjectMemberRole.MEMBER);
@@ -96,7 +108,11 @@ public class ProjectServiceImpl implements ProjectService {
 	}
 
 	@Override
-	public void deleteProject(Long projectId, Long userId) {
+	public void deleteProject(Long projectId, String userEmail) {
+		User user = userRepository.findByEmail(userEmail)
+			.orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+		Long userId = user.getId();
+		
 		Project project = getProjectWithPermissionCheck(projectId, userId, ProjectMemberRole.OWNER);
 
 		fileService.deleteAllProjectFiles(projectId);

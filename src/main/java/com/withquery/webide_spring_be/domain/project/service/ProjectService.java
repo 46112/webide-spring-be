@@ -12,13 +12,13 @@ public interface ProjectService {
 
 	ProjectResponse createProject(ProjectCreateRequest request, String userEmail);
 
-	List<ProjectResponse> getMyProjects(Long userId);
+	List<ProjectResponse> getMyProjects(String userEmail);
 
-	ProjectDetailResponse getProjectDetail(Long projectId, Long userId);
+	ProjectDetailResponse getProjectDetail(Long projectId, String userEmail);
 
-	ProjectResponse updateProject(Long projectId, ProjectUpdateRequest request, Long userId);
+	ProjectResponse updateProject(Long projectId, ProjectUpdateRequest request, String userEmail);
 
-	void deleteProject(Long projectId, Long userId);
+	void deleteProject(Long projectId, String userEmail);
 
 	boolean existsProject(Long projectId);
 
