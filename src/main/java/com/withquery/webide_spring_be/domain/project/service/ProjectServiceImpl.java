@@ -18,6 +18,7 @@ import com.withquery.webide_spring_be.domain.project.entity.ProjectMemberRole;
 import com.withquery.webide_spring_be.domain.project.repository.ProjectMemberRepository;
 import com.withquery.webide_spring_be.domain.project.repository.ProjectRepository;
 
+import ch.qos.logback.core.spi.ErrorCodes;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -73,28 +74,42 @@ public class ProjectServiceImpl implements ProjectService{
 
 	@Override
 	public ProjectResponse updateProject(Long projectId, ProjectUpdateRequest request, Long userId) {
-		Project project = getProject(projectId);
-
-		ProjectMemberRole userRole = projectMemberService.getMemberRole(projectId, userId)
-			.orElseThrow(() -> new RuntimeException("프로젝트 접근 권한이 없습니다."));
+		Project project = getProjectWithPermissionCheck(projectId, userId, ProjectMemberRole.OWNER, ProjectMemberRole.MEMBER);
 
 		project.updateInfo(request.getNewName(), request.getNewDescription());
+
 		return ProjectResponse.from(project);
 
 	}
 
 	@Override
 	public void deleteProject(Long projectId, Long userId) {
+		Project project = getProjectWithPermissionCheck(projectId, userId, ProjectMemberRole.OWNER);
 
+		fileService.deleteAllProjectFiles(projectId);
+
+		projectRepository.delete(project);
 	}
 
 	@Override
 	public boolean existsProject(Long projectId) {
-		return false;
+		return projectRepository.existsById(projectId);
 	}
 
 	@Override
 	public Project getProject(Long projectId) {
-		return null;
+		return projectRepository.findById(projectId)
+			.orElseThrow();
+	}
+
+	private Project getProjectWithPermissionCheck(Long projectId, Long userId, ProjectMemberRole... requiredRoles) {
+		Project project = projectRepository.findById(projectId)
+			.orElseThrow();
+
+		if (!projectMemberService.hasPermission(projectId, userId, requiredRoles)) {
+			throw new RuntimeException();
+		}
+
+		return project;
 	}
 }

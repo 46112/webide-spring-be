@@ -10,4 +10,5 @@ public interface ProjectMemberService {
 
 	Optional<ProjectMemberRole> getMemberRole(Long projectId, Long userId);
 
+	boolean hasPermission(Long projectId, Long userId, ProjectMemberRole... requiredRoles);
 }

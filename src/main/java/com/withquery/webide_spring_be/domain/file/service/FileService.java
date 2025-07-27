@@ -7,4 +7,6 @@ public interface FileService {
 	void createRootDirectory(Long projectId, String projectName);
 
 	FileTreeNode getFileTree(Long projectId);
+
+	void deleteAllProjectFiles(Long projectId);
 }
