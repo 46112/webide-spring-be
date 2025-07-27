@@ -18,7 +18,6 @@ import com.withquery.webide_spring_be.domain.project.entity.ProjectMemberRole;
 import com.withquery.webide_spring_be.domain.project.repository.ProjectMemberRepository;
 import com.withquery.webide_spring_be.domain.project.repository.ProjectRepository;
 
-import ch.qos.logback.core.spi.ErrorCodes;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

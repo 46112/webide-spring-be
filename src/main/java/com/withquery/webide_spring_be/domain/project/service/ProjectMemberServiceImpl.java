@@ -1,5 +1,6 @@
 package com.withquery.webide_spring_be.domain.project.service;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -41,5 +42,26 @@ public class ProjectMemberServiceImpl implements ProjectMemberService{
 	public Optional<ProjectMemberRole> getMemberRole(Long projectId, Long userId) {
 		return projectMemberRepository.findByProjectIdAndUserId(projectId, userId)
 			.map(ProjectMember::getRole);
+	}
+
+	@Override
+	public boolean isMember(Long projectId, Long userId) {
+		return projectMemberRepository.existsByProjectIdAndUserIdAndIsActiveTrue(projectId, userId);
+	}
+
+	@Override
+	public boolean hasPermission(Long projectId, Long userId, ProjectMemberRole... requiredRoles) {
+		if (requiredRoles.length == 0) {
+			return isMember(projectId, userId);
+		}
+
+		Optional<ProjectMemberRole> memberRole = getMemberRole(projectId, userId);
+
+		if (memberRole.isEmpty()) {
+			return false;
+		}
+
+		return Arrays.stream(requiredRoles)
+			.anyMatch(role -> memberRole.get() == role);
 	}
 }
