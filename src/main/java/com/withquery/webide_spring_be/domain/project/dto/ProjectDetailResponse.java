@@ -24,6 +24,9 @@ public class ProjectDetailResponse {
 	@Schema(description = "파일 트리")
 	private List<FileTreeNode> fileTree;
 
+	@Schema(description = "응답 메시지", example = "프로젝트 상세 정보가 성공적으로 조회되었습니다.")
+	private String message;
+
 	public static ProjectDetailResponse from(ProjectResponse project, FileTreeNode fileTree) {
 		return ProjectDetailResponse.builder()
 			.project(project)

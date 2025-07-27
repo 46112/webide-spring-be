@@ -19,10 +19,11 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class ProjectMemberServiceImpl implements ProjectMemberService{
+public class ProjectMemberServiceImpl implements ProjectMemberService {
 
 	private final ProjectRepository projectRepository;
 	private final ProjectMemberRepository projectMemberRepository;
+
 	@Override
 	public void addOwnerMember(Long projectId, Long userId) {
 		Project project = projectRepository.findById(projectId)

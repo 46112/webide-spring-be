@@ -7,9 +7,6 @@ import com.withquery.webide_spring_be.domain.project.entity.Project;
 import com.withquery.webide_spring_be.domain.project.entity.ProjectMemberRole;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -43,6 +40,9 @@ public class ProjectResponse {
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime updatedAt;
 
+	@Schema(description = "응답 메시지", example = "프로젝트 정보가 성공적으로 조회되었습니다.")
+	private String message;
+
 	public static ProjectResponse from(Project project) {
 		return ProjectResponse.builder()
 			.id(project.getId())
@@ -50,6 +50,17 @@ public class ProjectResponse {
 			.description(project.getDescription())
 			.createdAt(project.getCreatedAt())
 			.updatedAt(project.getUpdatedAt())
+			.build();
+	}
+
+	public static ProjectResponse from(Project project, String message) {
+		return ProjectResponse.builder()
+			.id(project.getId())
+			.name(project.getName())
+			.description(project.getDescription())
+			.createdAt(project.getCreatedAt())
+			.updatedAt(project.getUpdatedAt())
+			.message(message)
 			.build();
 	}
 

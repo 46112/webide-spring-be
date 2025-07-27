@@ -48,7 +48,7 @@ public class ProjectServiceImpl implements ProjectService {
 
 		projectMemberService.addOwnerMember(savedProject.getId(), userId);
 
-		return ProjectResponse.from(savedProject);
+		return ProjectResponse.from(savedProject, "프로젝트가 성공적으로 생성되었습니다.");
 	}
 
 	@Override
@@ -85,7 +85,7 @@ public class ProjectServiceImpl implements ProjectService {
 
 		project.updateInfo(request.getNewName(), request.getNewDescription());
 
-		return ProjectResponse.from(project);
+		return ProjectResponse.from(project, "프로젝트가 성공적으로 수정되었습니다.");
 
 	}
 
@@ -96,6 +96,8 @@ public class ProjectServiceImpl implements ProjectService {
 		fileService.deleteAllProjectFiles(projectId);
 
 		projectRepository.delete(project);
+
+		log.info("프로젝트가 성공적으로 삭제되었습니다.");
 	}
 
 	@Override
