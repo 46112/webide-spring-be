@@ -17,6 +17,8 @@ import com.withquery.webide_spring_be.domain.project.entity.ProjectMember;
 import com.withquery.webide_spring_be.domain.project.entity.ProjectMemberRole;
 import com.withquery.webide_spring_be.domain.project.repository.ProjectMemberRepository;
 import com.withquery.webide_spring_be.domain.project.repository.ProjectRepository;
+import com.withquery.webide_spring_be.domain.user.entity.User;
+import com.withquery.webide_spring_be.domain.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,19 +33,23 @@ public class ProjectServiceImpl implements ProjectService {
 	private final ProjectMemberRepository projectMemberRepository;
 	private final ProjectMemberService projectMemberService;
 	private final FileService fileService;
+	private final UserRepository userRepository;
 
 	@Override
-	public ProjectResponse createProject(ProjectCreateRequest request, Long userId) {
+	public ProjectResponse createProject(ProjectCreateRequest request, String userEmail) {
 		if (request.getName() == null || request.getName().trim().isEmpty()) {
 			throw new IllegalArgumentException("프로젝트 이름은 필수입니다.");
 		}
+
+		User creator = userRepository.findByEmail(userEmail)
+			.orElseThrow(() -> new IllegalArgumentException("생성자를 찾을 수 없습니다."));
+		Long userId = creator.getId();
 
 		Project project = Project.builder()
 			.name(request.getName())
 			.description(request.getDescription())
 			.ownerId(userId)
 			.build();
-
 		Project savedProject = projectRepository.save(project);
 
 		projectMemberService.addOwnerMember(savedProject.getId(), userId);

@@ -10,7 +10,7 @@ import com.withquery.webide_spring_be.domain.project.entity.Project;
 
 public interface ProjectService {
 
-	ProjectResponse createProject(ProjectCreateRequest request, Long userId);
+	ProjectResponse createProject(ProjectCreateRequest request, String userEmail);
 
 	List<ProjectResponse> getMyProjects(Long userId);
 
