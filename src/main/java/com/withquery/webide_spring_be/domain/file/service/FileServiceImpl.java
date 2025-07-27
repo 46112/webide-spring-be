@@ -99,7 +99,24 @@ public class FileServiceImpl implements FileService{
 
 	@Override
 	public FileResponse updateFile(Long projectId, FileUpdateRequest request) {
-		return null;
+		File file = fileRepository.findByIdAndProjectId(request.getId(), projectId)
+			.orElseThrow();
+
+		File newParentDir = null;
+		if (request.getNewParentId() != null) {
+			newParentDir = fileRepository.findByIdAndProjectId(request.getNewParentId(), projectId)
+				.orElseThrow();
+		}
+
+		String newPath = buildFilePath(newParentDir, request.getNewName());
+
+		if (!file.getPath().equals(newPath) && fileRepository.existsByProjectIdAndPath(projectId, newPath)) {
+			updateChildrenPaths(file, newPath);
+		}
+
+		file.updateFile(request.getNewName(), newPath, request.getNewParentId());
+
+		return FileResponse.from(file);
 	}
 
 	@Override
@@ -164,6 +181,18 @@ public class FileServiceImpl implements FileService{
 		}
 	}
 
+	private void updateChildrenPaths(File directory, String newPath) {
+		List<File> children = fileRepository.findByParentId(directory.getId());
 
+		for (File child : children) {
+			String oldChildPath = child.getPath();
+			String newChildPath = oldChildPath.replace(directory.getPath(), newPath);
+			child.updatePath(newChildPath);
+
+			if (child.getType() == FileType.DIRECTORY) {
+				updateChildrenPaths(child, newChildPath);
+			}
+		}
+	}
 
 }

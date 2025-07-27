@@ -16,6 +16,8 @@ public interface FileRepository extends JpaRepository<File, Long> {
 
 	Optional<File> findByIdAndProjectId(Long id, Long projectId);
 
+	List<File> findByParentId(Long id);
+
 	Optional<File> findByProjectIdAndPath(Long projectId, String path);
 
 	List<File> findByProjectIdAndType(Long projectId, FileType type);
@@ -31,4 +33,5 @@ public interface FileRepository extends JpaRepository<File, Long> {
 	List<File> findByProjectIdOrderByPathAsc(Long projectId);
 
 	boolean existsByProjectIdAndPath(Long projectId, String path);
+
 }

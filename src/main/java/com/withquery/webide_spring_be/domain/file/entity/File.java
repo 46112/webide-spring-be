@@ -19,6 +19,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -92,13 +94,21 @@ public class File {
 	}
 
 	@Schema(hidden = true)
-	public void updatePath(String newPath) {
+	public void updateFile(
+		@NotBlank(message = "새 이름은 필수입니다.")
+		@Size(max = 255, message = "파일/디렉토리 이름은 255자를 초과할 수 없습니다.")
+		String newName,
+		String newPath,
+		Long newParentId) {
+
+		this.name = newName;
 		this.path = newPath;
+		this.parentId = newParentId;
 	}
 
 	@Schema(hidden = true)
-	public void updateParent(Long newParentId) {
-		this.parentId = newParentId;
+	public void updatePath(String newPath) {
+		this.path = newPath;
 	}
 
 	@Schema(hidden = true)
@@ -146,4 +156,5 @@ public class File {
 			.project(project)
 			.build();
 	}
+
 }
