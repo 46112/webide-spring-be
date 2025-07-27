@@ -138,7 +138,7 @@ public class ProjectController {
 		Authentication authentication) {
 		CustomUserDetails userDetails = (CustomUserDetails)authentication.getPrincipal();
 		String userEmail = userDetails.getEmail();
-		ProjectDetailResponse response = projectService.getProjectDetail(projectId, , userEmail);
+		ProjectDetailResponse response = projectService.getProjectDetail(projectId, userEmail);
 		return ResponseEntity.ok(response);
 	}
 
@@ -183,7 +183,7 @@ public class ProjectController {
 		Authentication authentication) {
 		CustomUserDetails userDetails = (CustomUserDetails)authentication.getPrincipal();
 		String userEmail = userDetails.getEmail();
-		ProjectResponse response = projectService.updateProject(projectId, request, , userEmail);
+		ProjectResponse response = projectService.updateProject(projectId, request, userEmail);
 		return ResponseEntity.ok(response);
 	}
 
@@ -217,7 +217,7 @@ public class ProjectController {
 		Authentication authentication) {
 		CustomUserDetails userDetails = (CustomUserDetails)authentication.getPrincipal();
 		String userEmail = userDetails.getEmail();
-		projectService.deleteProject(projectId, , userEmail);
+		projectService.deleteProject(projectId, userEmail);
 		return ResponseEntity.noContent().build();
 	}
 
