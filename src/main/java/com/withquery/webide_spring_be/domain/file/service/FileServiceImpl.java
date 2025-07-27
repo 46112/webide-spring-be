@@ -18,7 +18,6 @@ import com.withquery.webide_spring_be.domain.file.entity.FileType;
 import com.withquery.webide_spring_be.domain.file.repository.FileRepository;
 import com.withquery.webide_spring_be.domain.project.entity.Project;
 import com.withquery.webide_spring_be.domain.project.repository.ProjectRepository;
-import com.withquery.webide_spring_be.domain.project.service.ProjectService;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -32,7 +31,6 @@ import lombok.extern.slf4j.Slf4j;
 public class FileServiceImpl implements FileService {
 
 	private final FileRepository fileRepository;
-	private final ProjectService projectService;
 	private final ProjectRepository projectRepository;
 
 	@Override
@@ -60,7 +58,7 @@ public class FileServiceImpl implements FileService {
 
 	@Override
 	public FileResponse createFile(Long projectId, FileCreateRequest request) {
-		if (!projectService.existsProject(projectId)) {
+		if (!projectRepository.existsById(projectId)) {
 			throw new RuntimeException("프로젝트를 찾을 수 없습니다.");
 		}
 
