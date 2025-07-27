@@ -52,7 +52,7 @@ public class ProjectServiceImpl implements ProjectService {
 			.build();
 		Project savedProject = projectRepository.save(project);
 
-		projectMemberService.addOwnerMember(savedProject.getId(), userId);
+		projectMemberService.addOwnerMember(savedProject.getId(), userEmail);
 
 		return ProjectResponse.from(savedProject, "프로젝트가 성공적으로 생성되었습니다.");
 	}
@@ -78,7 +78,7 @@ public class ProjectServiceImpl implements ProjectService {
 
 		Project project = getProject(projectId);
 
-		ProjectMemberRole userRole = projectMemberService.getMemberRole(projectId, userId)
+		ProjectMemberRole userRole = projectMemberService.getMemberRole(projectId, userEmail)
 			.orElseThrow(() -> new RuntimeException("프로젝트 접근 권한이 없습니다."));
 
 		FileTreeNode fileTree = fileService.getFileTree(projectId);
@@ -94,11 +94,7 @@ public class ProjectServiceImpl implements ProjectService {
 			throw new IllegalArgumentException("프로젝트 이름은 공백일 수 없습니다.");
 		}
 
-		User user = userRepository.findByEmail(userEmail)
-			.orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-		Long userId = user.getId();
-
-		Project project = getProjectWithPermissionCheck(projectId, userId, ProjectMemberRole.OWNER,
+		Project project = getProjectWithPermissionCheck(projectId, userEmail, ProjectMemberRole.OWNER,
 			ProjectMemberRole.MEMBER);
 
 		project.updateInfo(request.getNewName(), request.getNewDescription());
@@ -109,11 +105,7 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Override
 	public void deleteProject(Long projectId, String userEmail) {
-		User user = userRepository.findByEmail(userEmail)
-			.orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-		Long userId = user.getId();
-		
-		Project project = getProjectWithPermissionCheck(projectId, userId, ProjectMemberRole.OWNER);
+		Project project = getProjectWithPermissionCheck(projectId, userEmail, ProjectMemberRole.OWNER);
 
 		fileService.deleteAllProjectFiles(projectId);
 
@@ -133,11 +125,12 @@ public class ProjectServiceImpl implements ProjectService {
 			.orElseThrow();
 	}
 
-	private Project getProjectWithPermissionCheck(Long projectId, Long userId, ProjectMemberRole... requiredRoles) {
+	private Project getProjectWithPermissionCheck(Long projectId, String userEmail,
+		ProjectMemberRole... requiredRoles) {
 		Project project = projectRepository.findById(projectId)
 			.orElseThrow(() -> new RuntimeException("프로젝트를 찾을 수 없습니다."));
 
-		if (!projectMemberService.hasPermission(projectId, userId, requiredRoles)) {
+		if (!projectMemberService.hasPermission(projectId, userEmail, requiredRoles)) {
 			throw new RuntimeException("프로젝트를 찾을 수 없습니다.");
 		}
 

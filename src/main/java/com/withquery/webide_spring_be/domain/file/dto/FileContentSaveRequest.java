@@ -1,7 +1,6 @@
 package com.withquery.webide_spring_be.domain.file.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +10,7 @@ import lombok.Setter;
 
 @Schema(description = "파일 내용 저장 요청")
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
