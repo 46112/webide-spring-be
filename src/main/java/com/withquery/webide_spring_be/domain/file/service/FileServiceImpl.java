@@ -20,6 +20,8 @@ import com.withquery.webide_spring_be.domain.project.entity.Project;
 import com.withquery.webide_spring_be.domain.project.repository.ProjectRepository;
 import com.withquery.webide_spring_be.domain.project.service.ProjectService;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -59,7 +61,40 @@ public class FileServiceImpl implements FileService{
 
 	@Override
 	public FileResponse createFile(Long projectId, FileCreateRequest request) {
-		return null;
+		if (!projectService.existsProject(projectId)) {
+			throw new RuntimeException();
+		}
+
+		File parentDir = null;
+		if (request.getParentId() != null) {
+			parentDir = fileRepository.findByIdAndProjectId(request.getParentId(), projectId)
+				.orElseThrow();
+
+			if (parentDir.getType() != FileType.DIRECTORY) {
+				throw new RuntimeException();
+			}
+		}
+
+		String path = buildFilePath(parentDir, request.getName());
+
+		if (fileRepository.existsByProjectIdAndPath(projectId, path)) {
+			throw new RuntimeException();
+		}
+
+		Project project = projectRepository.getReferenceById(projectId);
+
+		File file = File.builder()
+			.project(project)
+			.name(request.getName())
+			.type(request.getType())
+			.path(path)
+			.parentId(request.getParentId())
+			.content(request.getType() == FileType.FILE ? "" : null)
+			.build();
+
+		File savedFile = fileRepository.save(file);
+
+		return FileResponse.from(savedFile);
 	}
 
 	@Override
@@ -114,6 +149,21 @@ public class FileServiceImpl implements FileService{
 
 		return root;
 	}
+
+	private String buildFilePath(File parentDir,
+		@NotBlank(message = "파일/디렉토리 이름은 필수입니다.") @Size(max = 255, message = "파일/디렉토리 이름은 255자를 초과할 수 없습니다.") String fileName) {
+		if (parentDir == null) {
+			return "/" + fileName;
+		}
+
+		String parentPath = parentDir.getPath();
+		if (parentPath.endsWith("/")) {
+			return parentPath + fileName;
+		} else {
+			return parentPath + "/" + fileName;
+		}
+	}
+
 
 
 }

@@ -3,6 +3,7 @@ package com.withquery.webide_spring_be.domain.file.dto;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.withquery.webide_spring_be.domain.file.entity.File;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Size;
@@ -43,4 +44,17 @@ public class FileResponse {
 	@Schema(description = "파일 수정 일시", example = "2025-07-23T17:32:30")
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime updatedAt;
+
+	public static FileResponse from(File file) {
+		return new FileResponse(
+			file.getId(),
+			file.getName(),
+			file.getType().name(),
+			file.getParentId(),
+			file.getProject().getId(),
+			file.getPath(),
+			file.getCreatedAt(),
+			file.getUpdatedAt()
+		);
+	}
 }
