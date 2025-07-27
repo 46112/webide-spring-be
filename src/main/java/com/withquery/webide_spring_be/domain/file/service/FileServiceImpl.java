@@ -47,7 +47,6 @@ public class FileServiceImpl implements FileService {
 			.path("/")
 			.parentId(null)
 			.build();
-
 	}
 
 	@Override
@@ -62,23 +61,23 @@ public class FileServiceImpl implements FileService {
 	@Override
 	public FileResponse createFile(Long projectId, FileCreateRequest request) {
 		if (!projectService.existsProject(projectId)) {
-			throw new RuntimeException();
+			throw new RuntimeException("프로젝트를 찾을 수 없습니다.");
 		}
 
 		File parentDir = null;
 		if (request.getParentId() != null) {
 			parentDir = fileRepository.findByIdAndProjectId(request.getParentId(), projectId)
-				.orElseThrow();
+				.orElseThrow(() -> new RuntimeException("부모 디렉토리를 찾을 수 없습니다."));
 
 			if (parentDir.getType() != FileType.DIRECTORY) {
-				throw new RuntimeException();
+				throw new RuntimeException("유효하지 않은 경로입니다.");
 			}
 		}
 
 		String path = buildFilePath(parentDir, request.getName());
 
 		if (fileRepository.existsByProjectIdAndPath(projectId, path)) {
-			throw new RuntimeException();
+			throw new RuntimeException("파일이 이미 존재합니다.");
 		}
 
 		Project project = projectRepository.getReferenceById(projectId);
@@ -94,65 +93,70 @@ public class FileServiceImpl implements FileService {
 
 		File savedFile = fileRepository.save(file);
 
-		return FileResponse.from(savedFile);
+		return FileResponse.from(savedFile, "파일/디렉토리를 성공적으로 생성했습니다.");
 	}
 
 	@Override
 	public FileResponse updateFile(Long projectId, FileUpdateRequest request) {
 		File file = fileRepository.findByIdAndProjectId(request.getId(), projectId)
-			.orElseThrow();
+			.orElseThrow(() -> new RuntimeException("파일을 찾을 수 없습니다."));
 
 		File newParentDir = null;
 		if (request.getNewParentId() != null) {
 			newParentDir = fileRepository.findByIdAndProjectId(request.getNewParentId(), projectId)
-				.orElseThrow();
+				.orElseThrow(() -> new RuntimeException("경로를 찾을 수 없습니다."));
 		}
 
 		String newPath = buildFilePath(newParentDir, request.getNewName());
 
 		if (!file.getPath().equals(newPath) && fileRepository.existsByProjectIdAndPath(projectId, newPath)) {
+			throw new RuntimeException("파일이 이미 존재합니다.");
+		}
+
+		if (file.getType() == FileType.DIRECTORY && !file.getPath().equals(newPath)) {
 			updateChildrenPaths(file, newPath);
 		}
 
 		file.updateFile(request.getNewName(), newPath, request.getNewParentId());
 
-		return FileResponse.from(file);
+		return FileResponse.from(file, "파일/디렉토리 수정을 성공적으로 완료하였습니다.");
 	}
 
 	@Override
 	public void deleteFile(Long projectId, Long fileId) {
 
 		File file = fileRepository.findByIdAndProjectId(fileId, projectId)
-			.orElseThrow();
+			.orElseThrow(() -> new RuntimeException("파일을 찾을 수 없습니다."));
 
 		if (file.getParentId() == null) {
-			throw new RuntimeException();
+			throw new RuntimeException("루트 디렉토리는 삭제할 수 없습니다.");
 		}
 
 		fileRepository.delete(file);
+		log.info("파일/디렉토리 삭제를 성공적으로 완료하였습니다.");
 	}
 
 	@Override
 	public FileContentResponse getFileContent(Long projectId, Long fileId) {
 
 		File file = fileRepository.findByIdAndProjectId(fileId, projectId)
-			.orElseThrow();
+			.orElseThrow(() -> new RuntimeException("파일을 찾을 수 없습니다."));
 
 		if (file.getType() != FileType.FILE) {
-			throw new RuntimeException();
+			throw new RuntimeException("파일 유형이 아닙니다.");
 		}
 
-		return FileContentResponse.from(file);
+		return FileContentResponse.from(file, "파일 내용을 성공적으로 조회되었습니다.");
 	}
 
 	@Override
 	public void saveFileContent(Long projectId, FileContentSaveRequest request) {
 
 		File file = fileRepository.findByIdAndProjectId(request.getFileId(), projectId)
-			.orElseThrow();
+			.orElseThrow(() -> new RuntimeException("파일을 찾을 수 없습니다."));
 
 		if (file.getType() != FileType.FILE) {
-			throw new RuntimeException();
+			throw new RuntimeException("파일 유형이 아닙니다.");
 		}
 
 		file.updateContent(request.getContent());

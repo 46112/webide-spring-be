@@ -8,6 +8,7 @@ import com.withquery.webide_spring_be.domain.file.entity.File;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,6 +18,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class FileResponse {
 	@Schema(description = "파일 고유 ID", example = "123")
 	private Long id;
@@ -45,16 +47,33 @@ public class FileResponse {
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime updatedAt;
 
+	@Schema(description = "응답 메시지", example = "파일이 성공적으로 조회되었습니다.")
+	private String message;
+
 	public static FileResponse from(File file) {
-		return new FileResponse(
-			file.getId(),
-			file.getName(),
-			file.getType().name(),
-			file.getParentId(),
-			file.getProject().getId(),
-			file.getPath(),
-			file.getCreatedAt(),
-			file.getUpdatedAt()
-		);
+		return FileResponse.builder()
+			.id(file.getId())
+			.name(file.getName())
+			.type(file.getType().name())
+			.parentId(file.getParentId())
+			.projectId(file.getProject().getId())
+			.path(file.getPath())
+			.createdAt(file.getCreatedAt())
+			.updatedAt(file.getUpdatedAt())
+			.build();
+	}
+
+	public static FileResponse from(File file, String message) {
+		return FileResponse.builder()
+			.id(file.getId())
+			.name(file.getName())
+			.type(file.getType().name())
+			.parentId(file.getParentId())
+			.projectId(file.getProject().getId())
+			.path(file.getPath())
+			.createdAt(file.getCreatedAt())
+			.updatedAt(file.getUpdatedAt())
+			.message(message)
+			.build();
 	}
 }
