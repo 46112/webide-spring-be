@@ -41,7 +41,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/projects/{projectId}/")
 @RequiredArgsConstructor
 @Tag(name = "File", description = "프로젝트 파일/디렉토리 관리 API")
-@SecurityRequirement(name = "bearerAuth") // JWT 인증 필요
+@SecurityRequirement(name = "bearerAuth")
 public class FileController {
 
 	private final FileService fileService;

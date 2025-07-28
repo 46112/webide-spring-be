@@ -15,10 +15,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProjectUpdateRequest {
-	@Schema(description = "프로젝트 고유 ID", example = "001")
-	@NotNull(message = "프로젝트 ID는 필수입니다.")
-	private Long id;
-
 	@Schema(description = "프로젝트 새 이름", example = "My New Project")
 	@NotBlank(message = "프로젝트 이름은 필수값입니다.")
 	@Size(max = 100, message = "프로젝트 이름은 100자를 초과할 수 없습니다.")
