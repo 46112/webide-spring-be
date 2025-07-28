@@ -7,6 +7,7 @@ public class PublicEndpoints {
         "/health",
         "/h2-console/**",
         "/swagger-ui/**",
+        "/swagger-ui.html",
         "/v3/api-docs/**"
     };
 } 
