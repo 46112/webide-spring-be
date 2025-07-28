@@ -32,6 +32,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/projects/{projectId}/")
 @RequiredArgsConstructor
 @Tag(name = "File", description = "프로젝트 파일/디렉토리 관리 API")
+@SecurityRequirement(name = "bearerAuth") // JWT 인증 필요
 public class FileController {
 
 	private final FileService fileService;

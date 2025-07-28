@@ -49,6 +49,7 @@ public class ProjectServiceImpl implements ProjectService {
 			.name(request.getName())
 			.description(request.getDescription())
 			.ownerId(userId)
+			.isPublic(request.getIsPublic() != null ? request.getIsPublic() : false)
 			.build();
 		Project savedProject = projectRepository.save(project);
 
