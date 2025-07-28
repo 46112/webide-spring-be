@@ -29,6 +29,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -36,6 +37,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 @Tag(name = "User", description = "사용자 관리 API")
+@SecurityRequirement(name = "bearerAuth")
 public class UserController {
 
 	private final UserService userService;
@@ -61,6 +63,7 @@ public class UserController {
 			)
 		)
 	})
+	@SecurityRequirement(name = "none")
 	public ResponseEntity<UserRegistrationResponse> registerUser(
 		@Valid @RequestBody UserRegistrationRequest request) {
 		UserRegistrationResponse response = userService.registerUser(request);
