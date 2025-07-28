@@ -81,16 +81,16 @@ public class FileController {
 	})
 	public ResponseEntity<Void> createRootDirectory(
 		@PathVariable Long projectId,
-		@RequestParam @NotBlank String projectName,
+		@RequestParam @NotBlank String name,
 		Authentication authentication) {
 		CustomUserDetails userDetails = (CustomUserDetails)authentication.getPrincipal();
 		String userEmail = userDetails.getEmail();
 		projectMemberService.hasPermission(projectId, userEmail, ProjectMemberRole.OWNER);
-		fileService.createRootDirectory(projectId, projectName);
+		fileService.createRootDirectory(projectId, name);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
-	@GetMapping
+	@GetMapping("/files")
 	@Operation(
 		summary = "파일 트리 조회",
 		description = "특정 프로젝트의 파일 및 디렉토리 구조를 트리 형태로 조회합니다. 프로젝트 멤버만 접근 가능합니다."
