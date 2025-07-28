@@ -45,6 +45,8 @@ public class FileServiceImpl implements FileService {
 			.path("/")
 			.parentId(null)
 			.build();
+		
+		fileRepository.save(rootDir);
 	}
 
 	@Override

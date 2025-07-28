@@ -4,7 +4,7 @@ import com.withquery.webide_spring_be.domain.file.entity.FileType;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,13 +23,9 @@ public class FileCreateRequest {
 	private String name;
 
 	@Schema(description = "타입 (FILE or DIRECTORY)", example = "FILE")
-	@NotBlank(message = "타입은 필수입니다.")
-	@Pattern(regexp = "^(FILE|DIRECTORY)$", message = "타입은 FILE 또는 DIRECTORY만 가능합니다.")
+	@NotNull(message = "타입은 필수입니다.")
 	private FileType type;
 
 	@Schema(description = "상위 디렉토리 ID", example = "1")
 	private Long parentId;
-
-	@Schema(description = "파일 내용 (type이 FILE일 때만)", example = "public class Main {\n    public static void main(String[] args) {\n        System.out.println(\"Hello World\");\n    }\n}")
-	private String content;
 }
