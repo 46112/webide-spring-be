@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 @Tag(name = "Auth", description = "인증 API")
+@SecurityRequirement(name = "none")
 public class AuthController {
 
     private final AuthService authService;
