@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.withquery.webide_spring_be.domain.file.dto.FileContentResponse;
 import com.withquery.webide_spring_be.domain.file.dto.FileContentSaveRequest;
+import com.withquery.webide_spring_be.domain.file.dto.FileContentUpdateRequest;
 import com.withquery.webide_spring_be.domain.file.dto.FileCreateRequest;
 import com.withquery.webide_spring_be.domain.file.dto.FileResponse;
 import com.withquery.webide_spring_be.domain.file.dto.FileTreeNode;
@@ -149,6 +150,7 @@ public class FileServiceImpl implements FileService {
 		return FileContentResponse.from(file, "파일 내용을 성공적으로 조회되었습니다.");
 	}
 
+
 	@Override
 	public void saveFileContent(Long projectId, FileContentSaveRequest request) {
 
@@ -160,6 +162,21 @@ public class FileServiceImpl implements FileService {
 		}
 
 		file.updateContent(request.getContent());
+	}
+
+	@Override
+	public FileResponse updateFileContent(Long projectId, FileContentUpdateRequest request) {
+		File file = fileRepository.findByIdAndProjectId(request.getFileId(), projectId)
+			.orElseThrow(() -> new RuntimeException("파일을 찾을 수 없습니다."));
+
+		if (file.getType() != FileType.FILE) {
+			throw new RuntimeException("파일 유형이 아닙니다.");
+		}
+
+		file.updateContent(request.getContent());
+		log.info("파일 내용이 성공적으로 업데이트되었습니다. 파일 ID: {}", request.getFileId());
+
+		return FileResponse.from(file, "파일 내용을 성공적으로 업데이트했습니다.");
 	}
 
 	@Override

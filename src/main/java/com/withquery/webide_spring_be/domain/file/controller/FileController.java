@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.withquery.webide_spring_be.common.dto.ErrorResponse;
 import com.withquery.webide_spring_be.domain.file.dto.FileContentResponse;
 import com.withquery.webide_spring_be.domain.file.dto.FileContentSaveRequest;
+import com.withquery.webide_spring_be.domain.file.dto.FileContentUpdateRequest;
 import com.withquery.webide_spring_be.domain.file.dto.FileCreateRequest;
 import com.withquery.webide_spring_be.domain.file.dto.FileResponse;
 import com.withquery.webide_spring_be.domain.file.dto.FileTreeNode;
@@ -354,7 +356,7 @@ public class FileController {
 	@PutMapping("/{fileId}/content")
 	@Operation(
 		summary = "파일 내용 저장",
-		description = "특정 파일의 내용을 저장(업데이트)합니다."
+		description = "특정 파일의 내용을 저장합니다."
 	)
 	@ApiResponses(value = {
 		@ApiResponse(
@@ -400,5 +402,60 @@ public class FileController {
 
 		fileService.saveFileContent(projectId, request);
 		return ResponseEntity.ok().build();
+	}
+
+
+	@PatchMapping("/{fileId}/content")
+	@Operation(
+		summary = "파일 내용 업데이트",
+		description = "특정 파일의 내용을 업데이트합니다. 기존 내용을 새로운 내용으로 교체합니다."
+	)
+	@ApiResponses(value = {
+		@ApiResponse(
+			responseCode = "200",
+			description = "파일 내용 업데이트 성공",
+			content = @Content(
+				schema = @Schema(implementation = FileResponse.class)
+			)
+		),
+		@ApiResponse(
+			responseCode = "400",
+			description = "잘못된 요청 (파일 유형이 아님)",
+			content = @Content(
+				schema = @Schema(implementation = ErrorResponse.class)
+			)
+		),
+		@ApiResponse(
+			responseCode = "403",
+			description = "권한 없음 (멤버 이상만 가능)",
+			content = @Content(
+				schema = @Schema(implementation = ErrorResponse.class)
+			)
+		),
+		@ApiResponse(
+			responseCode = "404",
+			description = "파일을 찾을 수 없음",
+			content = @Content(
+				schema = @Schema(implementation = ErrorResponse.class)
+			)
+		)
+	})
+	public ResponseEntity<FileResponse> updateFileContent(
+		@PathVariable Long projectId,
+		@PathVariable Long fileId,
+		@Valid @RequestBody FileContentUpdateRequest request,
+		Authentication authentication) {
+		CustomUserDetails userDetails = (CustomUserDetails)authentication.getPrincipal();
+		String userEmail = userDetails.getEmail();
+
+		if (!projectMemberService.hasPermission(projectId, userEmail, ProjectMemberRole.MEMBER,
+			ProjectMemberRole.OWNER)) {
+			throw new RuntimeException("파일 내용을 업데이트할 권한이 없습니다.");
+		}
+
+		request.setFileId(fileId);
+
+		FileResponse response = fileService.updateFileContent(projectId, request);
+		return ResponseEntity.ok(response);
 	}
 }
