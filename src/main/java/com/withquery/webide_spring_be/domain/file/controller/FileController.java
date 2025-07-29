@@ -32,6 +32,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/projects/{projectId}/")
 @RequiredArgsConstructor
 @Tag(name = "File", description = "프로젝트 파일/디렉토리 관리 API")
+@SecurityRequirement(name = "bearerAuth")
 public class FileController {
 
 	private final FileService fileService;
@@ -79,16 +81,16 @@ public class FileController {
 	})
 	public ResponseEntity<Void> createRootDirectory(
 		@PathVariable Long projectId,
-		@RequestParam @NotBlank String projectName,
+		@RequestParam @NotBlank String name,
 		Authentication authentication) {
 		CustomUserDetails userDetails = (CustomUserDetails)authentication.getPrincipal();
 		String userEmail = userDetails.getEmail();
 		projectMemberService.hasPermission(projectId, userEmail, ProjectMemberRole.OWNER);
-		fileService.createRootDirectory(projectId, projectName);
+		fileService.createRootDirectory(projectId, name);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
-	@GetMapping
+	@GetMapping("/files")
 	@Operation(
 		summary = "파일 트리 조회",
 		description = "특정 프로젝트의 파일 및 디렉토리 구조를 트리 형태로 조회합니다. 프로젝트 멤버만 접근 가능합니다."
@@ -122,8 +124,7 @@ public class FileController {
 		CustomUserDetails userDetails = (CustomUserDetails)authentication.getPrincipal();
 		String userEmail = userDetails.getEmail();
 
-		User currentUser = projectMemberService.getUserByEmail(userEmail);
-		if (!projectMemberService.hasPermission(projectId, currentUser.getEmail(), ProjectMemberRole.MEMBER,
+		if (!projectMemberService.hasPermission(projectId, userEmail, ProjectMemberRole.MEMBER,
 			ProjectMemberRole.OWNER)) {
 			throw new RuntimeException("프로젝트 파일 트리를 조회할 권한이 없습니다.");
 		}
@@ -181,8 +182,7 @@ public class FileController {
 		CustomUserDetails userDetails = (CustomUserDetails)authentication.getPrincipal();
 		String userEmail = userDetails.getEmail();
 
-		User currentUser = projectMemberService.getUserByEmail(userEmail);
-		if (!projectMemberService.hasPermission(projectId, currentUser.getEmail(), ProjectMemberRole.MEMBER,
+		if (!projectMemberService.hasPermission(projectId, userEmail, ProjectMemberRole.MEMBER,
 			ProjectMemberRole.OWNER)) {
 			throw new RuntimeException("파일/디렉토리를 생성할 권한이 없습니다.");
 		}
@@ -241,8 +241,7 @@ public class FileController {
 		CustomUserDetails userDetails = (CustomUserDetails)authentication.getPrincipal();
 		String userEmail = userDetails.getEmail();
 
-		User currentUser = projectMemberService.getUserByEmail(userEmail);
-		if (!projectMemberService.hasPermission(projectId, currentUser.getEmail(), ProjectMemberRole.MEMBER,
+		if (!projectMemberService.hasPermission(projectId, userEmail, ProjectMemberRole.MEMBER,
 			ProjectMemberRole.OWNER)) {
 			throw new RuntimeException("파일/디렉토리를 수정할 권한이 없습니다.");
 		}
@@ -292,8 +291,7 @@ public class FileController {
 		CustomUserDetails userDetails = (CustomUserDetails)authentication.getPrincipal();
 		String userEmail = userDetails.getEmail();
 
-		User currentUser = projectMemberService.getUserByEmail(userEmail);
-		if (!projectMemberService.hasPermission(projectId, currentUser.getEmail(), ProjectMemberRole.MEMBER,
+		if (!projectMemberService.hasPermission(projectId, userEmail, ProjectMemberRole.MEMBER,
 			ProjectMemberRole.OWNER)) {
 			throw new RuntimeException("파일/디렉토리를 삭제할 권한이 없습니다.");
 		}
@@ -344,8 +342,7 @@ public class FileController {
 		CustomUserDetails userDetails = (CustomUserDetails)authentication.getPrincipal();
 		String userEmail = userDetails.getEmail();
 
-		User currentUser = projectMemberService.getUserByEmail(userEmail);
-		if (!projectMemberService.hasPermission(projectId, currentUser.getEmail(), ProjectMemberRole.MEMBER,
+		if (!projectMemberService.hasPermission(projectId, userEmail, ProjectMemberRole.MEMBER,
 			ProjectMemberRole.OWNER)) {
 			throw new RuntimeException("파일 내용을 조회할 권한이 없습니다.");
 		}
@@ -394,8 +391,7 @@ public class FileController {
 		CustomUserDetails userDetails = (CustomUserDetails)authentication.getPrincipal();
 		String userEmail = userDetails.getEmail();
 
-		User currentUser = projectMemberService.getUserByEmail(userEmail);
-		if (!projectMemberService.hasPermission(projectId, currentUser.getEmail(), ProjectMemberRole.MEMBER,
+		if (!projectMemberService.hasPermission(projectId, userEmail, ProjectMemberRole.MEMBER,
 			ProjectMemberRole.OWNER)) {
 			throw new RuntimeException("파일 내용을 저장할 권한이 없습니다.");
 		}

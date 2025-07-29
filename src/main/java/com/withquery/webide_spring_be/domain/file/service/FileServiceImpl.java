@@ -34,17 +34,19 @@ public class FileServiceImpl implements FileService {
 	private final ProjectRepository projectRepository;
 
 	@Override
-	public void createRootDirectory(Long projectId, String projectName) {
+	public void createRootDirectory(Long projectId, String name) {
 
 		Project project = projectRepository.getReferenceById(projectId);
 
 		File rootDir = File.builder()
 			.project(project)
-			.name(projectName)
+			.name(name)
 			.type(FileType.DIRECTORY)
 			.path("/")
 			.parentId(null)
 			.build();
+		
+		fileRepository.save(rootDir);
 	}
 
 	@Override

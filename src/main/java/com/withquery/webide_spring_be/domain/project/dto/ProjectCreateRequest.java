@@ -22,4 +22,7 @@ public class ProjectCreateRequest {
 	@Schema(description = "프로젝트 설명", example = "데이터 분석을 위한 SQL 프로젝트입니다.")
 	@Size(max = 500, message = "프로젝트 설명은 500자를 초과할 수 없습니다.")
 	private String description;
+
+	@Schema(description = "프로젝트 공개 여부", example = "false")
+	private Boolean isPublic = false;
 }

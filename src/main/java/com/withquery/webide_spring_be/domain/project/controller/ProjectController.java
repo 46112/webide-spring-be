@@ -28,6 +28,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -35,6 +36,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/projects")
 @RequiredArgsConstructor
 @Tag(name = "Project", description = "프로젝트 관리 API")
+@SecurityRequirement(name = "bearerAuth")
 public class ProjectController {
 
 	private final ProjectService projectService;
