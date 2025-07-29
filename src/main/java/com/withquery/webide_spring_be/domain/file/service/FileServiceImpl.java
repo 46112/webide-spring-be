@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.withquery.webide_spring_be.domain.file.dto.FileContentResponse;
-import com.withquery.webide_spring_be.domain.file.dto.FileContentSaveRequest;
 import com.withquery.webide_spring_be.domain.file.dto.FileContentUpdateRequest;
 import com.withquery.webide_spring_be.domain.file.dto.FileCreateRequest;
 import com.withquery.webide_spring_be.domain.file.dto.FileResponse;
@@ -46,7 +45,7 @@ public class FileServiceImpl implements FileService {
 			.path("/")
 			.parentId(null)
 			.build();
-		
+
 		fileRepository.save(rootDir);
 	}
 
@@ -148,20 +147,6 @@ public class FileServiceImpl implements FileService {
 		}
 
 		return FileContentResponse.from(file, "파일 내용을 성공적으로 조회되었습니다.");
-	}
-
-
-	@Override
-	public void saveFileContent(Long projectId, FileContentSaveRequest request) {
-
-		File file = fileRepository.findByIdAndProjectId(request.getFileId(), projectId)
-			.orElseThrow(() -> new RuntimeException("파일을 찾을 수 없습니다."));
-
-		if (file.getType() != FileType.FILE) {
-			throw new RuntimeException("파일 유형이 아닙니다.");
-		}
-
-		file.updateContent(request.getContent());
 	}
 
 	@Override
