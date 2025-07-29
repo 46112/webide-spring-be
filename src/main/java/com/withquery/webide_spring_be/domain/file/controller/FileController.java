@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.withquery.webide_spring_be.common.dto.ErrorResponse;
 import com.withquery.webide_spring_be.domain.file.dto.FileContentResponse;
-import com.withquery.webide_spring_be.domain.file.dto.FileContentSaveRequest;
+import com.withquery.webide_spring_be.domain.file.dto.FileContentUpdateRequest;
 import com.withquery.webide_spring_be.domain.file.dto.FileCreateRequest;
 import com.withquery.webide_spring_be.domain.file.dto.FileResponse;
 import com.withquery.webide_spring_be.domain.file.dto.FileTreeNode;
@@ -23,7 +23,6 @@ import com.withquery.webide_spring_be.domain.file.dto.FileUpdateRequest;
 import com.withquery.webide_spring_be.domain.file.service.FileService;
 import com.withquery.webide_spring_be.domain.project.entity.ProjectMemberRole;
 import com.withquery.webide_spring_be.domain.project.service.ProjectMemberService;
-import com.withquery.webide_spring_be.domain.user.entity.User;
 import com.withquery.webide_spring_be.util.jwt.CustomUserDetails;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,8 +30,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -353,13 +352,16 @@ public class FileController {
 
 	@PutMapping("/{fileId}/content")
 	@Operation(
-		summary = "파일 내용 저장",
-		description = "특정 파일의 내용을 저장(업데이트)합니다."
+		summary = "파일 내용 저장/업데이트",
+		description = "특정 파일의 내용을 저장 및 업데이트합니다."
 	)
 	@ApiResponses(value = {
 		@ApiResponse(
 			responseCode = "200",
-			description = "파일 내용 저장 성공"
+			description = "파일 내용 저장/업데이트 성공",
+			content = @Content(
+				schema = @Schema(implementation = FileResponse.class)
+			)
 		),
 		@ApiResponse(
 			responseCode = "400",
@@ -383,22 +385,22 @@ public class FileController {
 			)
 		)
 	})
-	public ResponseEntity<Void> saveFileContent(
+	public ResponseEntity<FileResponse> updateFileContent(
 		@PathVariable Long projectId,
 		@PathVariable Long fileId,
-		@Valid @RequestBody FileContentSaveRequest request,
+		@Valid @RequestBody FileContentUpdateRequest request,
 		Authentication authentication) {
 		CustomUserDetails userDetails = (CustomUserDetails)authentication.getPrincipal();
 		String userEmail = userDetails.getEmail();
 
 		if (!projectMemberService.hasPermission(projectId, userEmail, ProjectMemberRole.MEMBER,
 			ProjectMemberRole.OWNER)) {
-			throw new RuntimeException("파일 내용을 저장할 권한이 없습니다.");
+			throw new RuntimeException("파일 내용을 업데이트할 권한이 없습니다.");
 		}
 
 		request.setFileId(fileId);
 
-		fileService.saveFileContent(projectId, request);
-		return ResponseEntity.ok().build();
+		FileResponse response = fileService.updateFileContent(projectId, request);
+		return ResponseEntity.ok(response);
 	}
 }
