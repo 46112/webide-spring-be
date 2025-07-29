@@ -6,6 +6,10 @@ import com.withquery.webide_spring_be.domain.dbconnection.dto.DbConnectionRespon
 import com.withquery.webide_spring_be.domain.dbconnection.dto.TableSchema;
 import com.withquery.webide_spring_be.domain.dbconnection.entity.DbConnection;
 import com.withquery.webide_spring_be.domain.dbconnection.repository.DbConnectionRepository;
+import com.withquery.webide_spring_be.domain.project.entity.Project;
+import com.withquery.webide_spring_be.domain.project.repository.ProjectRepository;
+import com.withquery.webide_spring_be.domain.user.entity.User;
+import com.withquery.webide_spring_be.domain.user.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,6 +28,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DbConnectionService {
     private final DbConnectionRepository repo;
+    private final ProjectRepository projectRepo;
+    private final UserRepository userRepo;
     private final DataSourceManager dsManager;
 
     @PostConstruct
@@ -32,39 +38,56 @@ public class DbConnectionService {
     }
 
     public DbConnectionResponse create(DbConnectionRequest req) {
-        DbConnection saved = repo.save(DbConnection.builder()
+        Project project = projectRepo.findById(req.getProjectId())
+                .orElseThrow(() -> new NoSuchElementException("프로젝트를 찾을 수 없습니다."));
+        User creator = userRepo.findById(req.getCreatedById())
+                .orElseThrow(() -> new NoSuchElementException("사용자를 찾을 수 없습니다."));
+
+        DbConnection entity = DbConnection.builder()
                 .name(req.getName())
                 .url(req.getUrl())
                 .username(req.getUsername())
                 .password(req.getPassword())
                 .driverClassName(req.getDriverClassName())
-                .build()
-        );
+                .project(project)
+                .createdBy(creator)
+                .build();
+        DbConnection saved = repo.save(entity);
         dsManager.createPool(saved);
+
         return toResponse(saved);
     }
 
     public List<DbConnectionResponse> list() {
         return repo.findAll().stream()
-                .map(this::toResponse).collect(Collectors.toList());
+                .map(this::toResponse)
+                .collect(Collectors.toList());
     }
 
     public DbConnectionResponse get(Long id) {
         DbConnection cfg = repo.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Not found"));
+                .orElseThrow(() -> new NoSuchElementException("해당 커넥션을 찾을 수 없습니다."));
         return toResponse(cfg);
     }
 
     public DbConnectionResponse update(Long id, DbConnectionRequest req) {
         DbConnection cfg = repo.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Not found"));
+                .orElseThrow(() -> new NoSuchElementException("해당 커넥션을 찾을 수 없습니다."));
+        Project project = projectRepo.findById(req.getProjectId())
+                .orElseThrow(() -> new NoSuchElementException("프로젝트를 찾을 수 없습니다."));
+        User creator = userRepo.findById(req.getCreatedById())
+                .orElseThrow(() -> new NoSuchElementException("사용자를 찾을 수 없습니다."));
+
         cfg.setName(req.getName());
         cfg.setUrl(req.getUrl());
         cfg.setUsername(req.getUsername());
         cfg.setPassword(req.getPassword());
         cfg.setDriverClassName(req.getDriverClassName());
+        cfg.setProject(project);
+        cfg.setCreatedBy(creator);
         DbConnection updated = repo.save(cfg);
         dsManager.updatePool(updated);
+
         return toResponse(updated);
     }
 
@@ -90,12 +113,13 @@ public class DbConnectionService {
             List<TableSchema> list = new ArrayList<>();
             while (tables.next()) {
                 String tableName = tables.getString("TABLE_NAME");
-                ResultSet cols = md.getColumns(null, null, tableName, "%");
-                TableSchema ts = new TableSchema(tableName);
-                while (cols.next()) {
-                    ts.addColumn(cols.getString("COLUMN_NAME"), cols.getString("TYPE_NAME"));
+                try (ResultSet cols = md.getColumns(null, null, tableName, "%")) {
+                    TableSchema ts = new TableSchema(tableName);
+                    while (cols.next()) {
+                        ts.addColumn(cols.getString("COLUMN_NAME"), cols.getString("TYPE_NAME"));
+                    }
+                    list.add(ts);
                 }
-                list.add(ts);
             }
             return list;
         }
@@ -103,9 +127,13 @@ public class DbConnectionService {
 
     private DbConnectionResponse toResponse(DbConnection cfg) {
         return new DbConnectionResponse(
-                cfg.getId(), cfg.getName(),
-                cfg.getUrl(), cfg.getUsername(),
-                cfg.getDriverClassName()
+                cfg.getId(),
+                cfg.getName(),
+                cfg.getUrl(),
+                cfg.getUsername(),
+                cfg.getDriverClassName(),
+                cfg.getProject().getId(),
+                cfg.getCreatedBy().getId()
         );
     }
 }

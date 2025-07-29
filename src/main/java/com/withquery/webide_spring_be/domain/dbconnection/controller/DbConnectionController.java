@@ -22,7 +22,8 @@ public class DbConnectionController {
 
     @PostMapping
     public ResponseEntity<DbConnectionResponse> create(@RequestBody DbConnectionRequest req) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(svc.create(req));
+        DbConnectionResponse resp = svc.create(req);
+        return ResponseEntity.status(HttpStatus.CREATED).body(resp);
     }
 
     @GetMapping

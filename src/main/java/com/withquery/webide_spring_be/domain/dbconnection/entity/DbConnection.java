@@ -1,5 +1,7 @@
 package com.withquery.webide_spring_be.domain.dbconnection.entity;
 
+import com.withquery.webide_spring_be.domain.project.entity.Project;
+import com.withquery.webide_spring_be.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,4 +21,12 @@ public class DbConnection {
     private String username;
     private String password;
     private String driverClassName;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "project_id", nullable = false)
+    private Project project;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "created_by", nullable = false)
+    private User createdBy;
 }
