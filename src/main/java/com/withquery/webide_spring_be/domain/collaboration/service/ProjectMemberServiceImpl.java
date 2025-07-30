@@ -138,20 +138,25 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 				User user = userRepository.findById(member.getUserId())
 					.orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
-				return ProjectMemberResponse.builder()
-					.userName(user.getNickname())
-					.userEmail(user.getEmail())
-					.role(member.getRole())
-					.joinedAt(member.getJoinedAt())
-					.isActive(member.getIsActive())
-					.build();
+				return ProjectMemberResponse.from(user, member);
 			})
 			.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<InvitationResponse> getUserInvitations(String userEmail) {
-		return List.of();
+		User user = getUserByEmail(userEmail);
+		List<ProjectInvitation> invitations = projectInvitationRepository.findByInviteeIdOrderByCreatedAtDesc(
+			user.getId());
+
+		return invitations.stream()
+			.map(invitation -> {
+				User inviter = userRepository.findById(invitation.getInviterId())
+					.orElseThrow(() -> new RuntimeException("초대한 사용자를 찾을 수 없습니다."));
+
+				return InvitationResponse.from(invitation, inviter);
+			})
+			.collect(Collectors.toList());
 	}
 
 	@Override

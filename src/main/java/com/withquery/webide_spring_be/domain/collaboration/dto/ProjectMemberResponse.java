@@ -2,8 +2,9 @@ package com.withquery.webide_spring_be.domain.collaboration.dto;
 
 import java.time.LocalDateTime;
 
-import com.withquery.webide_spring_be.domain.collaboration.entity.InvitationStatus;
+import com.withquery.webide_spring_be.domain.collaboration.entity.ProjectMember;
 import com.withquery.webide_spring_be.domain.collaboration.entity.ProjectMemberRole;
+import com.withquery.webide_spring_be.domain.user.entity.User;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -35,5 +36,14 @@ public class ProjectMemberResponse {
 	@Schema(description = "현재 프로젝트 활성 상태 여부", example = "true")
 	private boolean isActive;
 
-
+	public static ProjectMemberResponse from(User user, ProjectMember member) {
+		return new ProjectMemberResponse(
+			user.getId(),
+			user.getNickname(),
+			user.getEmail(),
+			member.getRole(),
+			member.getJoinedAt(),
+			member.getIsActive()
+		);
+	}
 }
