@@ -21,8 +21,8 @@ import com.withquery.webide_spring_be.domain.file.dto.FileResponse;
 import com.withquery.webide_spring_be.domain.file.dto.FileTreeNode;
 import com.withquery.webide_spring_be.domain.file.dto.FileUpdateRequest;
 import com.withquery.webide_spring_be.domain.file.service.FileService;
-import com.withquery.webide_spring_be.domain.project.entity.ProjectMemberRole;
-import com.withquery.webide_spring_be.domain.project.service.ProjectMemberService;
+import com.withquery.webide_spring_be.domain.collaboration.entity.ProjectMemberRole;
+import com.withquery.webide_spring_be.domain.collaboration.service.ProjectMemberService;
 import com.withquery.webide_spring_be.util.jwt.CustomUserDetails;
 
 import io.swagger.v3.oas.annotations.Operation;

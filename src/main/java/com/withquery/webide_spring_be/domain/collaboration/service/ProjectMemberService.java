@@ -1,8 +1,8 @@
-package com.withquery.webide_spring_be.domain.project.service;
+package com.withquery.webide_spring_be.domain.collaboration.service;
 
 import java.util.Optional;
 
-import com.withquery.webide_spring_be.domain.project.entity.ProjectMemberRole;
+import com.withquery.webide_spring_be.domain.collaboration.entity.ProjectMemberRole;
 import com.withquery.webide_spring_be.domain.user.entity.User;
 
 public interface ProjectMemberService {

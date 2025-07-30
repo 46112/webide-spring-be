@@ -1,4 +1,4 @@
-package com.withquery.webide_spring_be.domain.project.service;
+package com.withquery.webide_spring_be.domain.collaboration.service;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -7,9 +7,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.withquery.webide_spring_be.domain.project.entity.Project;
-import com.withquery.webide_spring_be.domain.project.entity.ProjectMember;
-import com.withquery.webide_spring_be.domain.project.entity.ProjectMemberRole;
-import com.withquery.webide_spring_be.domain.project.repository.ProjectMemberRepository;
+import com.withquery.webide_spring_be.domain.collaboration.entity.ProjectMember;
+import com.withquery.webide_spring_be.domain.collaboration.entity.ProjectMemberRole;
+import com.withquery.webide_spring_be.domain.collaboration.repository.ProjectMemberRepository;
 import com.withquery.webide_spring_be.domain.project.repository.ProjectRepository;
 import com.withquery.webide_spring_be.domain.user.entity.User;
 import com.withquery.webide_spring_be.domain.user.repository.UserRepository;

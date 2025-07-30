@@ -1,11 +1,8 @@
 package com.withquery.webide_spring_be.domain.collaboration.dto;
 
-import com.withquery.webide_spring_be.domain.project.entity.ProjectMemberRole;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

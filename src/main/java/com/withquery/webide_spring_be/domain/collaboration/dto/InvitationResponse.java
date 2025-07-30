@@ -3,7 +3,7 @@ package com.withquery.webide_spring_be.domain.collaboration.dto;
 import java.time.LocalDateTime;
 
 import com.withquery.webide_spring_be.domain.collaboration.entity.InvitationStatus;
-import com.withquery.webide_spring_be.domain.project.entity.ProjectMemberRole;
+import com.withquery.webide_spring_be.domain.collaboration.entity.ProjectMemberRole;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

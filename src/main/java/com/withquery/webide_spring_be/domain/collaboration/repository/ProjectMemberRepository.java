@@ -1,4 +1,4 @@
-package com.withquery.webide_spring_be.domain.project.repository;
+package com.withquery.webide_spring_be.domain.collaboration.repository;
 
 import java.util.List;
 import java.util.Optional;
@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.withquery.webide_spring_be.domain.project.entity.ProjectMember;
-import com.withquery.webide_spring_be.domain.project.entity.ProjectMemberRole;
+import com.withquery.webide_spring_be.domain.collaboration.entity.ProjectMember;
+import com.withquery.webide_spring_be.domain.collaboration.entity.ProjectMemberRole;
 
 public interface ProjectMemberRepository extends JpaRepository<ProjectMember, Long> {
 

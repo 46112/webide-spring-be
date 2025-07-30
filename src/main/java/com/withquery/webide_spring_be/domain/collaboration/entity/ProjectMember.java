@@ -1,8 +1,10 @@
-package com.withquery.webide_spring_be.domain.project.entity;
+package com.withquery.webide_spring_be.domain.collaboration.entity;
 
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
+
+import com.withquery.webide_spring_be.domain.project.entity.Project;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
