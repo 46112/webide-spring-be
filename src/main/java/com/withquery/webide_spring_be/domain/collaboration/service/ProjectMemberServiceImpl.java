@@ -3,6 +3,7 @@ package com.withquery.webide_spring_be.domain.collaboration.service;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -126,7 +127,26 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 
 	@Override
 	public List<ProjectMemberResponse> getProjectMembers(Long projectId, String userEmail) {
-		return List.of();
+		if (!isMember(projectId, userEmail)) {
+			throw new IllegalArgumentException("프로젝트에 접근할 권한이 없습니다.");
+		}
+
+		List<ProjectMember> members = projectMemberRepository.findByProjectIdAndIsActiveTrue(projectId);
+
+		return members.stream()
+			.map(member -> {
+				User user = userRepository.findById(member.getUserId())
+					.orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+				return ProjectMemberResponse.builder()
+					.userName(user.getNickname())
+					.userEmail(user.getEmail())
+					.role(member.getRole())
+					.joinedAt(member.getJoinedAt())
+					.isActive(member.getIsActive())
+					.build();
+			})
+			.collect(Collectors.toList());
 	}
 
 	@Override
