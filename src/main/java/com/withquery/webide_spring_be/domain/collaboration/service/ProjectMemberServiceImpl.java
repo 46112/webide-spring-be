@@ -162,6 +162,22 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 	}
 
 	@Override
+	public List<InvitationResponse> getSentInvitations(String senderEmail) {
+		User sender = getUserByEmail(senderEmail);
+		List<ProjectInvitation> sentInvitations = projectInvitationRepository.findByInviterIdOrderByCreatedAtDesc(
+			sender.getId());
+
+		return sentInvitations.stream()
+			.map(invitation -> {
+				User invitee = userRepository.findById(invitation.getInviteeId())
+					.orElseThrow(() -> new RuntimeException("초대받은 사용자를 찾을 수 없습니다."));
+
+				return InvitationResponse.from(invitation, invitee);
+			})
+			.collect(Collectors.toList());
+	}
+
+	@Override
 	public void handleInvitation(Long invitationId, String userEmail, InvitationActionRequest request) {
 		User user = getUserByEmail(userEmail);
 

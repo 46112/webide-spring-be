@@ -125,7 +125,7 @@ public class ProjectCollaborationController {
 
 	@GetMapping("/invitations")
 	@Operation(
-		summary = "사용자 초대 목록 조회",
+		summary = "초대 수신 목록 조회",
 		description = "현재 사용자가 받은 모든 프로젝트 초대 목록을 조회합니다."
 	)
 	@ApiResponses(value = {
@@ -150,6 +150,35 @@ public class ProjectCollaborationController {
 
 		List<InvitationResponse> invitations = projectMemberService.getUserInvitations(userEmail);
 		return ResponseEntity.ok(invitations);
+	}
+
+	@GetMapping("/invitations/sent")
+	@Operation(
+		summary = "초대 발신 목록 조회",
+		description = "현재 사용자가 보낸 모든 프로젝트 초대 목록을 조회합니다."
+	)
+	@ApiResponses(value = {
+		@ApiResponse(
+			responseCode = "200",
+			description = "보낸 초대 목록 조회 성공",
+			content = @Content(
+				schema = @Schema(implementation = InvitationResponse.class)
+			)
+		),
+		@ApiResponse(
+			responseCode = "404",
+			description = "사용자를 찾을 수 없음",
+			content = @Content(
+				schema = @Schema(implementation = ErrorResponse.class)
+			)
+		)
+	})
+	public ResponseEntity<List<InvitationResponse>> getSentInvitations(
+		Authentication authentication) {
+		String userEmail = authentication.getName();
+
+		List<InvitationResponse> sentInvitations = projectMemberService.getSentInvitations(userEmail);
+		return ResponseEntity.ok(sentInvitations);
 	}
 
 	@PutMapping("/invitations/{invitationId}")

@@ -28,6 +28,8 @@ public interface ProjectMemberService {
 
 	List<InvitationResponse> getUserInvitations(String userEmail);
 
+	List<InvitationResponse> getSentInvitations(String senderEmail);
+
 	void handleInvitation(Long invitationId, String userEmail, InvitationActionRequest request);
 
 	void leaveProject(Long projectId, String userEmail);

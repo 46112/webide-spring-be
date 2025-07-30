@@ -23,4 +23,5 @@ public interface ProjectInvitationRepository extends JpaRepository<ProjectInvita
 	@Query("SELECT pi FROM ProjectInvitation pi JOIN FETCH pi.project WHERE pi.id = :id")
 	Optional<ProjectInvitation> findByIdWithProject(@Param("id") Long invitationId);
 
+	List<ProjectInvitation> findByInviterIdOrderByCreatedAtDesc(Long inviterId);
 }
