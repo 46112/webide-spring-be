@@ -1,11 +1,16 @@
 package com.withquery.webide_spring_be.domain.collaboration.service;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.withquery.webide_spring_be.domain.collaboration.dto.InvitationActionRequest;
+import com.withquery.webide_spring_be.domain.collaboration.dto.InvitationResponse;
+import com.withquery.webide_spring_be.domain.collaboration.dto.InviteMemberRequest;
+import com.withquery.webide_spring_be.domain.collaboration.dto.ProjectMemberResponse;
 import com.withquery.webide_spring_be.domain.project.entity.Project;
 import com.withquery.webide_spring_be.domain.collaboration.entity.ProjectMember;
 import com.withquery.webide_spring_be.domain.collaboration.entity.ProjectMemberRole;
@@ -82,5 +87,30 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 
 		return Arrays.stream(requiredRoles)
 			.anyMatch(role -> memberRole.get() == role);
+	}
+
+	@Override
+	public void inviteMember(Long projectId, String inviterEmail, InviteMemberRequest request) {
+
+	}
+
+	@Override
+	public List<ProjectMemberResponse> getProjectMembers(Long projectId, String userEmail) {
+		return List.of();
+	}
+
+	@Override
+	public List<InvitationResponse> getUserInvitations(String userEmail) {
+		return List.of();
+	}
+
+	@Override
+	public void handleInvitation(Long invitationId, String userEmail, InvitationActionRequest request) {
+
+	}
+
+	@Override
+	public void leaveProject(Long projectId, String userEmail) {
+
 	}
 }
