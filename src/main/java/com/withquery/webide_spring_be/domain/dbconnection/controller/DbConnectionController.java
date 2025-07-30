@@ -14,46 +14,60 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+@Tag(name = "DB Connections", description = "DB 연결 정보 관리 API")
 @RestController
 @RequestMapping("/api/db-connections")
 @RequiredArgsConstructor
 public class DbConnectionController {
     private final DbConnectionService svc;
 
+    @Operation(summary = "DB 연결 생성", description = "새로운 DB 연결 정보를 생성하고 커넥션 풀을 초기화합니다.")
     @PostMapping
-    public ResponseEntity<DbConnectionResponse> create(@RequestBody DbConnectionRequest req) {
+    public ResponseEntity<DbConnectionResponse> create(
+            @RequestBody DbConnectionRequest req) {
         DbConnectionResponse resp = svc.create(req);
         return ResponseEntity.status(HttpStatus.CREATED).body(resp);
     }
 
+    @Operation(summary = "DB 연결 목록 조회", description = "저장된 모든 DB 연결 정보를 반환합니다.")
     @GetMapping
     public List<DbConnectionResponse> list() {
         return svc.list();
     }
 
+    @Operation(summary = "DB 연결 상세 조회", description = "ID에 해당하는 DB 연결 정보를 반환합니다.")
     @GetMapping("/{id}")
     public DbConnectionResponse get(@PathVariable Long id) {
         return svc.get(id);
     }
 
+    @Operation(summary = "DB 연결 수정", description = "ID에 해당하는 DB 연결 정보를 업데이트합니다.")
     @PutMapping("/{id}")
-    public DbConnectionResponse update(@PathVariable Long id,
-                                       @RequestBody DbConnectionRequest req) {
+    public DbConnectionResponse update(
+            @PathVariable Long id,
+            @RequestBody DbConnectionRequest req) {
         return svc.update(id, req);
     }
 
+    @Operation(summary = "DB 연결 삭제", description = "ID에 해당하는 DB 연결 정보를 삭제하고 커넥션 풀을 해제합니다.")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         svc.delete(id);
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "DB 연결 테스트", description = "ID에 해당하는 커넥션 풀에서 실제 연결을 시도해 봅니다.")
     @PostMapping("/test")
-    public Map<String, Boolean> test(@RequestBody Map<String, Long> body) {
+    public Map<String, Boolean> test(
+            @RequestBody Map<String, Long> body) {
         boolean ok = svc.testConnection(body.get("id"));
         return Collections.singletonMap("success", ok);
     }
 
+    @Operation(summary = "스키마 조회", description = "ID에 해당하는 DB 연결로부터 테이블/컬럼 스키마를 조회합니다.")
     @GetMapping("/{id}/schemas")
     public List<TableSchema> schemas(@PathVariable Long id) throws SQLException {
         return svc.getSchemas(id);
