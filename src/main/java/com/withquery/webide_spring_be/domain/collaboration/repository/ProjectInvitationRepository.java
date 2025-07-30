@@ -1,6 +1,7 @@
 package com.withquery.webide_spring_be.domain.collaboration.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,6 +22,6 @@ public interface ProjectInvitationRepository extends JpaRepository<ProjectInvita
 	List<ProjectInvitation> findByProjectId(@Param("projectId") Long projectId);
 
 	@Query("SELECT pi FROM projectInvitation pi JOIN FETCH pi.project WHERE pi.id = :invitationId")
-	List<ProjectInvitation> findByIdWithProject(@Param("invitationId") Long invitationId);
+	Optional<ProjectInvitation> findByIdWithProject(@Param("invitationId") Long invitationId);
 
 }

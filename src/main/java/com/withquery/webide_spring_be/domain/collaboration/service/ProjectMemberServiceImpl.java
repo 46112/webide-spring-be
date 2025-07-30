@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.withquery.webide_spring_be.domain.collaboration.dto.InvitationAction;
 import com.withquery.webide_spring_be.domain.collaboration.dto.InvitationActionRequest;
 import com.withquery.webide_spring_be.domain.collaboration.dto.InvitationResponse;
 import com.withquery.webide_spring_be.domain.collaboration.dto.InviteMemberRequest;
@@ -161,11 +162,41 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 
 	@Override
 	public void handleInvitation(Long invitationId, String userEmail, InvitationActionRequest request) {
+		User user = getUserByEmail(userEmail);
+
+		ProjectInvitation invitation = projectInvitationRepository.findByIdWithProject(invitationId)
+			.orElseThrow(() -> new IllegalArgumentException("초대를 찾을 수 없습니다."));
+
+		if (!invitation.getInviteeId().equals(user.getId())) {
+			throw new IllegalArgumentException("이 초대를 처리할 권한이 없습니다.");
+		}
+
+		if (!invitation.isPending()) {
+			throw new IllegalArgumentException("이미 처리된 초대입니다.");
+		}
+
+		if (request.getAction() == InvitationAction.ACCEPT) {
+			invitation.accept();
+
+			ProjectMember newMember = ProjectMember.builder()
+				.project(invitation.getProject())
+				.userId(user.getId())
+				.role(ProjectMemberRole.MEMBER)
+				.isActive(true)
+				.build();
+
+			projectMemberRepository.save(newMember);
+		} else if (request.getAction() == InvitationAction.REJECT) {
+			invitation.reject();
+		}
+
+		projectInvitationRepository.save(invitation);
 
 	}
 
 	@Override
 	public void leaveProject(Long projectId, String userEmail) {
+
 
 	}
 }
