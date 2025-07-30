@@ -196,7 +196,21 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 
 	@Override
 	public void leaveProject(Long projectId, String userEmail) {
+		User user = getUserByEmail(userEmail);
 
+		ProjectMember member = projectMemberRepository.findByProjectIdAndUserId(projectId, user.getId())
+			.orElseThrow(() -> new IllegalArgumentException("프로젝트 멤버가 아닙니다."));
 
+		if (member.getRole() == ProjectMemberRole.OWNER) {
+			throw new IllegalArgumentException("프로젝트 소유자는 탈퇴할 수 없습니다.");
+		}
+
+		long activeMemberCount = projectMemberRepository.countByProjectIdAndIsActiveTrue(projectId);
+		if (activeMemberCount <= 1) {
+			throw new IllegalArgumentException("프로젝트에는 최소 1명의 멤버가 있어야 합니다.");
+		}
+
+		member.setIsActive(false);
+		projectMemberRepository.save(member);
 	}
 }
