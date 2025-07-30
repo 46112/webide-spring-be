@@ -11,6 +11,9 @@ import com.withquery.webide_spring_be.domain.collaboration.dto.InvitationActionR
 import com.withquery.webide_spring_be.domain.collaboration.dto.InvitationResponse;
 import com.withquery.webide_spring_be.domain.collaboration.dto.InviteMemberRequest;
 import com.withquery.webide_spring_be.domain.collaboration.dto.ProjectMemberResponse;
+import com.withquery.webide_spring_be.domain.collaboration.entity.InvitationStatus;
+import com.withquery.webide_spring_be.domain.collaboration.entity.ProjectInvitation;
+import com.withquery.webide_spring_be.domain.collaboration.repository.ProjectInvitationRepository;
 import com.withquery.webide_spring_be.domain.project.entity.Project;
 import com.withquery.webide_spring_be.domain.collaboration.entity.ProjectMember;
 import com.withquery.webide_spring_be.domain.collaboration.entity.ProjectMemberRole;
@@ -31,6 +34,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 	private final ProjectRepository projectRepository;
 	private final ProjectMemberRepository projectMemberRepository;
 	private final UserRepository userRepository;
+	private final ProjectInvitationRepository projectInvitationRepository;
 
 	@Override
 	public User getUserByEmail(String userEmail) {
@@ -91,7 +95,33 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 
 	@Override
 	public void inviteMember(Long projectId, String inviterEmail, InviteMemberRequest request) {
+		if (!hasPermission(projectId, inviterEmail, ProjectMemberRole.OWNER)) {
+			throw new IllegalArgumentException("프로젝트 멤버를 초대할 권한이 없습니다.");
+		}
 
+		User inviter = getUserByEmail(inviterEmail);
+		User invitee = getUserByEmail(request.getEmail());
+
+		Project project = projectRepository.findById(projectId)
+			.orElseThrow(() -> new RuntimeException("프로젝트를 찾을 수 없습니다."));
+
+		if (isMember(projectId, request.getEmail())) {
+			throw new IllegalArgumentException("이미 프로젝트 멤버입니다.");
+		}
+
+		if (projectInvitationRepository.existsByProjectIdAndInviteeIdAndStatus(projectId, invitee.getId(),
+			InvitationStatus.PENDING)) {
+			throw new IllegalArgumentException("이미 초대를 보냈습니다.");
+		}
+
+		ProjectInvitation invitation = ProjectInvitation.builder()
+			.project(project)
+			.inviterId(inviter.getId())
+			.inviteeId(invitee.getId())
+			.status(InvitationStatus.PENDING)
+			.build();
+
+		projectInvitationRepository.save(invitation);
 	}
 
 	@Override
