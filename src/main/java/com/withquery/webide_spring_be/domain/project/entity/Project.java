@@ -7,6 +7,7 @@ import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.withquery.webide_spring_be.domain.collaboration.entity.ProjectMember;
 import com.withquery.webide_spring_be.domain.file.entity.File;
 
 import io.swagger.v3.oas.annotations.media.Schema;

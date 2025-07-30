@@ -1,8 +1,10 @@
-package com.withquery.webide_spring_be.domain.project.entity;
+package com.withquery.webide_spring_be.domain.collaboration.entity;
 
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
+
+import com.withquery.webide_spring_be.domain.project.entity.Project;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
@@ -21,11 +23,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "project_members",
 	uniqueConstraints = @UniqueConstraint(columnNames = {"project_id", "user_id"}))
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
