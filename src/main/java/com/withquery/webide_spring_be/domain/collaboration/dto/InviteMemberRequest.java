@@ -1,8 +1,11 @@
 package com.withquery.webide_spring_be.domain.collaboration.dto;
 
+import com.withquery.webide_spring_be.domain.collaboration.entity.ProjectMemberRole;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,4 +19,8 @@ public class InviteMemberRequest {
 	@NotBlank(message = "이메일은 필수입니다.")
 	@Email(message = "올바른 이메일 형식이어야 합니다.")
 	private String email;
+
+	@Schema(description = "초대할 사용자의 역할", example = "MEMBER")
+	@NotNull
+	private ProjectMemberRole role;
 }

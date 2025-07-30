@@ -18,10 +18,9 @@ public interface ProjectInvitationRepository extends JpaRepository<ProjectInvita
 
 	boolean existsByProjectIdAndInviteeIdAndStatus(Long projectId, Long inviteeId, InvitationStatus status);
 
-	@Query("SELECT pi FROM projectInvitation pi WHERE pi.project.id = :projectId")
-	List<ProjectInvitation> findByProjectId(@Param("projectId") Long projectId);
+	List<ProjectInvitation> findByProjectId(Long projectId);
 
-	@Query("SELECT pi FROM projectInvitation pi JOIN FETCH pi.project WHERE pi.id = :invitationId")
-	Optional<ProjectInvitation> findByIdWithProject(@Param("invitationId") Long invitationId);
+	@Query("SELECT pi FROM ProjectInvitation pi JOIN FETCH pi.project WHERE pi.id = :id")
+	Optional<ProjectInvitation> findByIdWithProject(@Param("id") Long invitationId);
 
 }

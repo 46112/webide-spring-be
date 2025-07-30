@@ -27,8 +27,8 @@ public interface ProjectMemberRepository extends JpaRepository<ProjectMember, Lo
 	@Query("SELECT pm FROM ProjectMember pm JOIN FETCH pm.project WHERE pm.userId = :userId AND pm.isActive = true")
 	List<ProjectMember> findActiveProjectsByUserId(@Param("userId") Long userId);
 
-	@Query("SELECT pm FROM ProjectMember pm.project WHERE pm.projectId = :projectId AND pm.role = :role AND pm.isActive = true")
-	List<ProjectMember> findByProjectIdAndRoleAndIsActiveTrue(@Param("userId") Long userId, @Param("role")
-		ProjectMemberRole role);
+	@Query("SELECT pm FROM ProjectMember pm WHERE pm.project.id = :projectId AND pm.role = :role AND pm.isActive = true")
+	List<ProjectMember> findActiveMembersByProjectIdAndRole(@Param("projectId") Long projectId, @Param("role")
+	ProjectMemberRole role);
 
 }

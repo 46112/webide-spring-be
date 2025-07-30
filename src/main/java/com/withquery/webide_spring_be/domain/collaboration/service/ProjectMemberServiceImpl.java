@@ -15,11 +15,11 @@ import com.withquery.webide_spring_be.domain.collaboration.dto.InviteMemberReque
 import com.withquery.webide_spring_be.domain.collaboration.dto.ProjectMemberResponse;
 import com.withquery.webide_spring_be.domain.collaboration.entity.InvitationStatus;
 import com.withquery.webide_spring_be.domain.collaboration.entity.ProjectInvitation;
-import com.withquery.webide_spring_be.domain.collaboration.repository.ProjectInvitationRepository;
-import com.withquery.webide_spring_be.domain.project.entity.Project;
 import com.withquery.webide_spring_be.domain.collaboration.entity.ProjectMember;
 import com.withquery.webide_spring_be.domain.collaboration.entity.ProjectMemberRole;
+import com.withquery.webide_spring_be.domain.collaboration.repository.ProjectInvitationRepository;
 import com.withquery.webide_spring_be.domain.collaboration.repository.ProjectMemberRepository;
+import com.withquery.webide_spring_be.domain.project.entity.Project;
 import com.withquery.webide_spring_be.domain.project.repository.ProjectRepository;
 import com.withquery.webide_spring_be.domain.user.entity.User;
 import com.withquery.webide_spring_be.domain.user.repository.UserRepository;
@@ -120,6 +120,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 			.project(project)
 			.inviterId(inviter.getId())
 			.inviteeId(invitee.getId())
+			.role(ProjectMemberRole.MEMBER)
 			.status(InvitationStatus.PENDING)
 			.build();
 
