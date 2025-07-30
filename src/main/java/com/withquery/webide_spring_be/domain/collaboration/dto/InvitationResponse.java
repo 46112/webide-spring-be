@@ -24,7 +24,7 @@ public class InvitationResponse {
 	@Schema(description = "초대한 프로젝트 이름", example = "with-query")
 	private String projectName;
 
-	@Schema(description = "초대한 유저의 닉네임", example = "김쿼리")
+	@Schema(description = "초대한 유저의 닉네임", example = "user")
 	private String inviterName;
 
 	@Schema(description = "초대한 유저의 이메일", example = "use@exmaple.com")
