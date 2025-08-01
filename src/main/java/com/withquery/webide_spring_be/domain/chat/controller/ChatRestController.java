@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.withquery.webide_spring_be.domain.chat.dto.ChatMessage;
 import com.withquery.webide_spring_be.domain.chat.service.ChatService;
-import com.withquery.webide_spring_be.domain.project.service.ProjectMemberService;
-import com.withquery.webide_spring_be.domain.project.entity.ProjectMemberRole;
+import com.withquery.webide_spring_be.domain.collaboration.service.ProjectMemberService;
+import com.withquery.webide_spring_be.domain.collaboration.entity.ProjectMemberRole;
 import com.withquery.webide_spring_be.util.jwt.CustomUserDetails;
 
 import io.swagger.v3.oas.annotations.Operation;
