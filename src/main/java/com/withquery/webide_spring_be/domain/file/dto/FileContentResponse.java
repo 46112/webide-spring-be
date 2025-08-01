@@ -19,6 +19,9 @@ public class FileContentResponse {
 	@Schema(description = "파일 고유 ID", example = "123")
 	private Long fileId;
 
+	@Schema(description = "파일 이름", example = "main.java")
+	private String fileName;
+
 	@Schema(description = "파일 내용", example = "public class Main {\n    public static void main(String[] args) {\n        System.out.println(\"Hello World\");\n    }\n}")
 	private String content;
 
@@ -37,6 +40,7 @@ public class FileContentResponse {
 
 		return FileContentResponse.builder()
 			.fileId(file.getId())
+			.fileName(file.getName())
 			.content(file.getContent())
 			.message(message)
 			.build();
