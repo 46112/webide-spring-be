@@ -86,8 +86,11 @@ public class ExecutionResult {
 			result.getStderr(),
 			result.getExitCode(),
 			executionTimeMs,
+			null,
 			startTime,
-			endTime
+			endTime,
+			null
 		);
 	}
+
 }

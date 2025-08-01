@@ -149,7 +149,7 @@ public class LanguageDetectorImpl implements LanguageDetector {
 
 	@Override
 	public String detectLanguage(String filename, String code) {
-		String fromExtension = detectLanguageFromExtension(fileId);
+		String fromExtension = detectLanguageFromExtension(filename);
 		if (fromExtension != null && isSupported(fromExtension)) {
 			return fromExtension;
 		}
