@@ -17,4 +17,4 @@ public interface UserService {
 	UserDeleteResponse deleteUser(String email);
 
 	PasswordChangeResponse changePassword(String email, PasswordChangeRequest request);
-} 
+}
