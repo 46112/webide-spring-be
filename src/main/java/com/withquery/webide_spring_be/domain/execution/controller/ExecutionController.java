@@ -88,7 +88,7 @@ public class ExecutionController {
 	public ResponseEntity<ExecutionResult> executeFile(
 		@PathVariable Long projectId,
 		@PathVariable Long fileId,
-		@Valid @RequestBody ExecutionRequest request,
+		@RequestBody ExecutionRequest request,
 		Authentication authentication) {
 
 		CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
@@ -133,7 +133,7 @@ public class ExecutionController {
 	})
 	public ResponseEntity<ExecutionResult> executeCode(
 		@PathVariable Long projectId,
-		@Valid @RequestBody ExecutionRequest request,
+		@RequestBody ExecutionRequest request,
 		Authentication authentication) {
 
 		CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
@@ -142,6 +142,14 @@ public class ExecutionController {
 		if (!projectMemberService.hasPermission(projectId, userEmail,
 			ProjectMemberRole.MEMBER, ProjectMemberRole.OWNER)) {
 			throw new RuntimeException("코드를 실행할 권한이 없습니다.");
+		}
+
+		if (request.getLanguage() == null || request.getLanguage().isBlank()) {
+			throw new IllegalArgumentException("언어를 지정해야 합니다.");
+		}
+
+		if (request.getCode() == null || request.getCode().isBlank()) {
+			throw new IllegalArgumentException("실행할 코드를 입력해야 합니다.");
 		}
 
 		ExecutionResult result = executionService.executeCode(projectId, request);

@@ -128,7 +128,8 @@ public class LanguageDetectorImpl implements LanguageDetector {
 
 	@Override
 	public boolean isSupported(String language) {
-		return normalizeLanguage(language) != null;
+		String normalized = normalizeLanguage(language);
+		return normalized != null;
 	}
 
 	@Override

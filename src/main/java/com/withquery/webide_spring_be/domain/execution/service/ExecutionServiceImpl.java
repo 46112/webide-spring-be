@@ -46,22 +46,24 @@ public class ExecutionServiceImpl implements ExecutionService{
 			throw new RuntimeException("파일을 찾을 수 없습니다.");
 		}
 
-		String detectedLanguage = languageDetector.detectLanguage(
-			fileContent.getFileName(),
-			fileContent.getContent()
-		);
+		String languageToUse = null;
 
-		if (detectedLanguage != null) {
-			request.setLanguage(detectedLanguage);
+		if (request.getLanguage() != null && !request.getLanguage().isBlank()) {
+			languageToUse = request.getLanguage();
+		} else {
+			languageToUse = languageDetector.detectLanguage(
+				fileContent.getFileName(),
+				fileContent.getContent()
+			);
 		}
 
-		if (request.getLanguage() == null || request.getLanguage().isBlank()) {
-			throw new RuntimeException("언어를 감지할 수 없습니다.");
+		if (languageToUse == null || languageToUse.isBlank()) {
+			throw new RuntimeException("언어를 지정해야 합니다.");
 		}
 
 		ExecutionRequest fileExecutionRequest = new ExecutionRequest();
 		fileExecutionRequest.setCode(fileContent.getContent());
-		fileExecutionRequest.setLanguage(request.getLanguage());
+		fileExecutionRequest.setLanguage(languageToUse);
 		fileExecutionRequest.setInput(request.getInput());
 		fileExecutionRequest.setOptions(request.getOptions());
 

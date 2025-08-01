@@ -40,6 +40,7 @@ public class FileContentResponse {
 
 		return FileContentResponse.builder()
 			.fileId(file.getId())
+			.fileName(file.getName())
 			.content(file.getContent())
 			.message(message)
 			.build();

@@ -28,7 +28,6 @@ public class ExecutionRequest {
 		allowableValues = {"javascript", "python", "java", "cpp", "c", "go", "rust", "sql", "mysql", "postgresql",
 			"mongodb"}
 	)
-	@NotBlank(message = "언어를 지정해야 합니다.")
 	private String language;
 
 	@Schema(
