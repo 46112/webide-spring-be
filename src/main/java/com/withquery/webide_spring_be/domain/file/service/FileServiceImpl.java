@@ -132,6 +132,11 @@ public class FileServiceImpl implements FileService {
 			throw new RuntimeException("루트 디렉토리는 삭제할 수 없습니다.");
 		}
 
+		List<File> children = fileRepository.findByParentId(fileId);
+		for (File child : children) {
+			deleteFile(projectId, child.getId());
+		}
+
 		fileRepository.delete(file);
 		log.info("파일/디렉토리 삭제를 성공적으로 완료하였습니다.");
 	}
