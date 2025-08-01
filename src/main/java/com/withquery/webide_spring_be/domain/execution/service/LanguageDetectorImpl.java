@@ -3,30 +3,29 @@ package com.withquery.webide_spring_be.domain.execution.service;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class LanguageDetectorImpl implements LanguageDetector {
 
-	private static final Map<String, String> EXTENSION_TO_LANGUAGE = Map.of(
-		// Web languages
-		"js", "javascript",
-		"ts", "typescript",
-		"jsx", "javascript",
-		"tsx", "typescript",
-		"html", "html",
-		"css", "css",
-
-		// Backend languages
-		"py", "python",
-		"java", "java",
-		"cpp", "cpp",
-		"cc", "cpp",
-		"cxx", "cpp",
-		"c", "c",
-		"go", "go",
-		"rs", "rust",
-
-		// Database
-		"sql", "sql"
+	private static final Map<String, String> EXTENSION_TO_LANGUAGE = Map.ofEntries(
+		Map.entry("js", "javascript"),
+		Map.entry("ts", "typescript"),
+		Map.entry("jsx", "javascript"),
+		Map.entry("tsx", "typescript"),
+		Map.entry("html", "html"),
+		Map.entry("css", "css"),
+		Map.entry("py", "python"),
+		Map.entry("java", "java"),
+		Map.entry("cpp", "cpp"),
+		Map.entry("cc", "cpp"),
+		Map.entry("cxx", "cpp"),
+		Map.entry("c", "c"),
+		Map.entry("go", "go"),
+		Map.entry("rs", "rust"),
+		Map.entry("sql", "sql")
 	);
+
 
 	private static final Map<String, Set<String>> LANGUAGE_ALIASES = Map.of(
 		"javascript", Set.of("js", "node", "nodejs"),
@@ -150,7 +149,7 @@ public class LanguageDetectorImpl implements LanguageDetector {
 
 	@Override
 	public String detectLanguage(String filename, String code) {
-		String fromExtension = detectLanguageFromExtension(filename);
+		String fromExtension = detectLanguageFromExtension(fileId);
 		if (fromExtension != null && isSupported(fromExtension)) {
 			return fromExtension;
 		}

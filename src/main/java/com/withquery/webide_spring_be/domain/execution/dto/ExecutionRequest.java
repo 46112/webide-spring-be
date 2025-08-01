@@ -4,9 +4,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "코드 실행 요청")
@@ -37,6 +41,7 @@ public class ExecutionRequest {
 	private ExecutionOptions options;
 
 	@Data
+	@Getter
 	@NoArgsConstructor
 	@AllArgsConstructor
 	@Schema(description = "코드 실행 시 적용할 옵션들")

@@ -70,4 +70,24 @@ public class ExecutionResult {
 		example = "SyntaxError: Unexpected token '}' at line 10"
 	)
 	private String errorMessage;
+
+	public static ExecutionResult from(
+		String executionId,
+		ProcessResult result,
+		ExecutionStatus status,
+		LocalDateTime startTime,
+		LocalDateTime endTime,
+		long executionTimeMs
+	) {
+		return new ExecutionResult(
+			executionId,
+			status,
+			result.getStdout(),
+			result.getStderr(),
+			result.getExitCode(),
+			executionTimeMs,
+			startTime,
+			endTime
+		);
+	}
 }
