@@ -4,15 +4,15 @@ FROM ubuntu:22.04
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    openjdk-17-jdk \
-    curl \
-    wget \
-    git \
-    vim \
-    nano \
-    unzip \
+# Install system dependencies with better error handling
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        openjdk-17-jdk \
+        curl \
+        wget \
+        unzip \
+        ca-certificates \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 # Set JAVA_HOME dynamically
