@@ -103,11 +103,15 @@ public class DbConnectionService {
         dsManager.removePool(id);
     }
 
-    public boolean testConnection(Long id) {
-        DataSource ds = dsManager.getDataSource(id);
-        try (Connection conn = ds.getConnection()) {
-            return conn.isValid(2);
-        } catch (SQLException e) {
+    public boolean testDirectConnection(DbConnectionRequest req) {
+        try {
+            Class.forName(req.getDriverClassName());
+            try (Connection conn = java.sql.DriverManager.getConnection(
+                    req.getUrl(), req.getUsername(), req.getPassword())) {
+                return conn.isValid(2);
+            }
+        } catch (Exception e) {
+            System.out.println("DB 연결 실패: " + e.getMessage());
             return false;
         }
     }
