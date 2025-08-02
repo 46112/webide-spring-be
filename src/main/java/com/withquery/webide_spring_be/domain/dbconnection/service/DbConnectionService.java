@@ -34,7 +34,14 @@ public class DbConnectionService {
 
     @PostConstruct
     public void initPools() {
-        repo.findAll().forEach(dsManager::createPool);
+        repo.findAll().forEach(connection -> {
+            try {
+                dsManager.createPool(connection);
+            } catch (Exception e) {
+                // Log the error but don't fail the application startup
+                System.err.println("Failed to initialize connection pool for connection ID: " + connection.getId() + ", Error: " + e.getMessage());
+            }
+        });
     }
 
     public DbConnectionResponse create(DbConnectionRequest req) {
