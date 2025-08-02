@@ -4,7 +4,6 @@ public class PublicEndpoints {
     public static final String[] ENDPOINTS = {
         "/api/auth/**",
         "/api/users/register",
-        "/api/projects/**",
         "/health",
         "/h2-console/**",
         "/swagger-ui/**",
