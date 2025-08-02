@@ -49,16 +49,21 @@ jobs:
         echo "✅ Docker image built and pushed successfully!"
         echo "Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
 
+    - name: Setup SSH
+      if: success() && github.ref == 'refs/heads/main'
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.AZURE_VM_SSH_KEY }}" > ~/.ssh/azure_vm_key
+        chmod 600 ~/.ssh/azure_vm_key
+        ssh-keyscan -H ${{ secrets.AZURE_VM_HOST }} >> ~/.ssh/known_hosts
+
     - name: Deploy to Azure VM
       if: success() && github.ref == 'refs/heads/main'
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.AZURE_VM_HOST }}
-        username: ${{ secrets.AZURE_VM_USERNAME }}
-        key: ${{ secrets.AZURE_VM_SSH_KEY }}
-        script: |
+      run: |
+        ssh -i ~/.ssh/azure_vm_key -o StrictHostKeyChecking=no ${{ secrets.AZURE_VM_USERNAME }}@${{ secrets.AZURE_VM_HOST }} << 'EOF'
           echo "🔄 Updating Spring Boot service..."
           docker compose pull webide-spring-be
           docker compose up -d webide-spring-be
           echo "✅ Spring Boot service updated successfully!"
           docker compose ps webide-spring-be
+        EOF
