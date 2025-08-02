@@ -59,12 +59,12 @@ public class DbConnectionController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "DB 연결 테스트", description = "ID에 해당하는 커넥션 풀에서 실제 연결을 시도해 봅니다.")
-    @PostMapping("/test")
-    public Map<String, Boolean> test(
-            @RequestBody Map<String, Long> body) {
-        boolean ok = svc.testConnection(body.get("id"));
-        return Collections.singletonMap("success", ok);
+    @Operation(summary = "입력 정보 기반 DB 연결 테스트", description = "ID 없이 DB 연결 정보를 직접 입력하여 연결 테스트를 수행합니다.")
+    @PostMapping("/test/direct")
+    public Map<String, Object> testDirect(@RequestBody DbConnectionRequest req) {
+        boolean success = svc.testDirectConnection(req);
+        String message = success ? "DB 연결 성공" : "DB 연결 실패";
+        return Map.of("success", success, "message", message);
     }
 
     @Operation(summary = "스키마 조회", description = "ID에 해당하는 DB 연결로부터 테이블/컬럼 스키마를 조회합니다.")
