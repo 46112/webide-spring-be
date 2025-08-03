@@ -109,8 +109,7 @@ public class ProjectServiceImpl implements ProjectService {
 	public void deleteProject(Long projectId, String userEmail) {
 		Project project = getProjectWithPermissionCheck(projectId, userEmail, ProjectMemberRole.OWNER);
 
-		fileService.deleteAllProjectFiles(projectId);
-
+		fileService.deleteProjectFilesRecursively(projectId);
 		projectRepository.delete(project);
 
 		log.info("프로젝트가 성공적으로 삭제되었습니다.");
