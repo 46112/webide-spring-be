@@ -17,8 +17,4 @@ public class TableSchema {
     public void addColumn(String name, String type) {
         columns.add(new ColumnInfo(name, type));
     }
-
-    public void deleteColumn(String name) {
-        columns.removeIf(column -> column.getName().equals(name));
-    }
 }
