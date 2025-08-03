@@ -12,13 +12,12 @@ import com.withquery.webide_spring_be.domain.user.entity.User;
 import com.withquery.webide_spring_be.domain.user.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -27,6 +26,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class DbConnectionService {
+
     private final DbConnectionRepository repo;
     private final ProjectRepository projectRepo;
     private final UserRepository userRepo;
@@ -37,9 +37,9 @@ public class DbConnectionService {
         repo.findAll().forEach(connection -> {
             try {
                 dsManager.createPool(connection);
+                System.out.println("✅ 초기 커넥션 풀 생성: ID = " + connection.getId());
             } catch (Exception e) {
-                // Log the error but don't fail the application startup
-                System.err.println("Failed to initialize connection pool for connection ID: " + connection.getId() + ", Error: " + e.getMessage());
+                System.err.println("❌ 초기 커넥션 풀 생성 실패: ID = " + connection.getId() + " / " + e.getMessage());
             }
         });
     }
@@ -60,7 +60,13 @@ public class DbConnectionService {
                 .createdBy(creator)
                 .build();
         DbConnection saved = repo.save(entity);
-        dsManager.createPool(saved);
+
+        try {
+            dsManager.createPool(saved);
+            System.out.println("✅ 커넥션 풀 생성 완료: ID = " + saved.getId());
+        } catch (Exception e) {
+            System.err.println("❌ 커넥션 풀 생성 실패: ID = " + saved.getId() + " / " + e.getMessage());
+        }
 
         return toResponse(saved);
     }
@@ -93,7 +99,13 @@ public class DbConnectionService {
         cfg.setProject(project);
         cfg.setCreatedBy(creator);
         DbConnection updated = repo.save(cfg);
-        dsManager.updatePool(updated);
+
+        try {
+            dsManager.updatePool(updated);
+            System.out.println("✅ 커넥션 풀 업데이트 완료: ID = " + updated.getId());
+        } catch (Exception e) {
+            System.err.println("❌ 커넥션 풀 업데이트 실패: ID = " + updated.getId() + " / " + e.getMessage());
+        }
 
         return toResponse(updated);
     }
@@ -101,12 +113,13 @@ public class DbConnectionService {
     public void delete(Long id) {
         repo.deleteById(id);
         dsManager.removePool(id);
+        System.out.println("🗑️ 커넥션 및 풀 제거 완료: ID = " + id);
     }
 
     public boolean testDirectConnection(DbConnectionRequest req) {
         try {
             Class.forName(req.getDriverClassName());
-            try (Connection conn = java.sql.DriverManager.getConnection(
+            try (Connection conn = DriverManager.getConnection(
                     req.getUrl(), req.getUsername(), req.getPassword())) {
                 return conn.isValid(2);
             }
@@ -118,6 +131,10 @@ public class DbConnectionService {
 
     public List<TableSchema> getSchemas(Long id) throws SQLException {
         DataSource ds = dsManager.getDataSource(id);
+        if (ds == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "해당 ID에 대한 커넥션 풀이 존재하지 않습니다.");
+        }
+
         try (Connection conn = ds.getConnection()) {
             DatabaseMetaData md = conn.getMetaData();
             ResultSet tables = md.getTables(null, null, "%", new String[]{"TABLE"});
