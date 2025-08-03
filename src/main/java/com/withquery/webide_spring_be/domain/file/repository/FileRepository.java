@@ -34,4 +34,5 @@ public interface FileRepository extends JpaRepository<File, Long> {
 
 	boolean existsByProjectIdAndPath(Long projectId, String path);
 
+	List<File> findByProjectIdAndParentIdIsNull(Long projectId);
 }
