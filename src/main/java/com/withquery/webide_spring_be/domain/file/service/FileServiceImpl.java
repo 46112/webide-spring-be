@@ -176,6 +176,24 @@ public class FileServiceImpl implements FileService {
 
 	}
 
+	@Override
+	public void deleteProjectFilesRecursively(Long projectId) {
+		List<File> rootFiles = fileRepository.findByProjectIdAndParentIdIsNull(projectId);
+
+		for (File rootFile : rootFiles) {
+			deleteFileAndChildrenRecursively(rootFile);
+		}
+	}
+
+	private void deleteFileAndChildrenRecursively(File file) {
+		List<File> children = fileRepository.findByParentId(file.getId());
+		for (File child : children) {
+			deleteFileAndChildrenRecursively(child);
+		}
+
+		fileRepository.delete(file);
+	}
+
 	private FileTreeNode buildFileTree(List<File> files) {
 		Map<Long, FileTreeNode> nodeMap = new HashMap<>();
 		FileTreeNode root = null;
